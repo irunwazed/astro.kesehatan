@@ -135,7 +135,7 @@ import { setCookie } from "src/helpers/lib/storage";
                         `✅ Login berhasil! Selamat datang, ${result.data.user?.email ?? "pengguna"}`,
                     );
                     setCookie("token", result.data.access_token ?? "", result.data.expires_in)
-                    route.push("/app/form1")
+                    route.push("/app")
                 } else {
                     alert(
                         `❌ Gagal login: ${result.data.message ?? "Email atau password salah"}`,
