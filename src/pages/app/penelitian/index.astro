@@ -1,0 +1,11 @@
+---
+import MainLayout from 'src/layouts/MainLayout.astro';
+import PenelitianData from 'src/components/modules/penelitian/table';
+
+---
+
+<MainLayout title="Penelitian">
+  <div class="bg-white rounded-lg shadow-sm">
+    <PenelitianData client:load />
+  </div>
+</MainLayout>

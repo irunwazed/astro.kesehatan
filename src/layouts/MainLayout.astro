@@ -1,0 +1,141 @@
+---
+import GlobalAlert from "src/components/solid/molecules/GlobalAlert";
+import "../styles/global.css";
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Sidebar -->
+    <aside class="fixed top-0 left-0 h-screen w-64 bg-white border-r shadow-sm">
+      <div class="p-4">
+        <h2 class="text-xl font-bold text-gray-800">Health Research</h2>
+      </div>
+      <nav class="mt-4">
+        <ul class="space-y-2">
+          <li>
+            <a
+              href="/app"
+              class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-3"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                ></path>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a
+              href="/app/penelitian"
+              class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-3"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+                ></path>
+              </svg>
+              Penelitian
+            </a>
+          </li>
+          <li>
+            <a
+              href="/reports"
+              class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-3"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm4-1a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              Laporan
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-8">
+      <div class="max-w-7xl mx-auto">
+        <header class="mb-8">
+          <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">{title}</h1>
+            <div class="flex items-center space-x-4">
+              <button class="p-2 text-gray-600 hover:text-gray-800">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+                  ></path>
+                </svg>
+              </button>
+              <button class="flex items-center space-x-2">
+                <img
+                  class="h-8 w-8 rounded-full"
+                  src="https://via.placeholder.com/32"
+                  alt="User avatar"
+                />
+                <span class="text-sm font-medium text-gray-700">Admin</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <slot />
+
+        <GlobalAlert client:load />
+      </div>
+    </main>
+
+    <script>
+      import { isLoggedIn } from "src/helpers/lib/auth";
+      import { route } from "src/helpers/lib/route";
+      import { clearAllCookieStorage } from "src/helpers/lib/storage";
+
+      // Redirect ke login kalau belum login
+      if (!isLoggedIn()) {
+        alert("Silakan login terlebih dahulu!");
+        route.push("/login");
+      }
+
+      // Logout
+      const logoutBtn = document.querySelector("#logoutBtn");
+      logoutBtn?.addEventListener("click", () => {
+        clearAllCookieStorage();
+        route.push("/login");
+      });
+    </script>
+  </body>
+</html>

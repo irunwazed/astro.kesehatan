@@ -1,0 +1,74 @@
+---
+
+---
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Lihat PDF</title>
+        <style>
+            body,
+            html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            #pdf-container {
+                width: 100vh;
+                height: 90vh;
+                border: none;
+            }
+            form {
+                margin: 10px;
+            }
+            input {
+                padding: 8px;
+                width: 300px;
+            }
+            button {
+                padding: 8px 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="pdf-container">No Data</div>
+
+        <script>
+            const container = document.getElementById("pdf-container");
+            async function loadPDF(path: string) {
+                try {
+                    const res = await fetch(
+                        `/api/download?path=${encodeURIComponent(path)}`,
+                    );
+                    if (!res.ok) throw new Error("Gagal memuat PDF");
+
+                    // Ambil blob PDF
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    // Tampilkan PDF di halaman
+                    container!.innerHTML = `
+      <embed src="${url}" type="application/pdf" width="100%" height="100%" />
+    `;
+                } catch (err) {
+                    console.error(err);
+                    container!.innerHTML = `<p style="color:red;">Gagal menampilkan PDF}</p>`;
+                }
+            }
+
+            // loadPDF("permohonan/tes.pdf");
+            const params = new URLSearchParams(window.location.search);
+            const path = params.get("path");
+
+            if (path) {
+                loadPDF(path);
+            } else {
+                // container.innerHTML = `<p style="color:red;">Parameter 'path' tidak ditemukan di URL.</p>`;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+---
+import MainLayout from 'src/layouts/MainLayout.astro';
+import Form1Data from 'src/components/modules/form1';
+
+---
+
+<MainLayout title="Form Penelitian">
+  <div class="bg-white rounded-lg shadow-sm">
+    <Form1Data client:load />
+  </div>
+</MainLayout>

@@ -8,6 +8,10 @@
     "dist"
   ],
   "compilerOptions": {
+    "baseUrl": ".",   
+    "paths": {
+      "@solid-ui/*": ["src/components/solid/ui/*"]  // ✅ alias @ui ke folder UI
+    },
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
   }

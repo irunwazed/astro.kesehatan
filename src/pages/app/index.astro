@@ -1,0 +1,22 @@
+---
+import FormPenelitianAwal from 'src/components/modules/awal';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+---
+
+<MainLayout title="Dashboard">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-sm">
+      <h3 class="text-lg font-medium text-gray-800 mb-2">Total Penelitian</h3>
+      <p class="text-3xl font-bold text-blue-600">24</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-sm">
+      <h3 class="text-lg font-medium text-gray-800 mb-2">Dalam Proses</h3>
+      <p class="text-3xl font-bold text-yellow-600">8</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-sm">
+      <h3 class="text-lg font-medium text-gray-800 mb-2">Selesai</h3>
+      <p class="text-3xl font-bold text-green-600">16</p>
+    </div>
+  </div>
+</MainLayout>
