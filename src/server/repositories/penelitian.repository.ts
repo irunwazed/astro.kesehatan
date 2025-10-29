@@ -1,5 +1,5 @@
 // import prisma from "../../helpers/lib/prisma";
-import type { Penelitian } from "src/helpers/dto/penelitian";
+import { StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { supabase } from "../configs/db";
 import type { FormPermohonanPenelitian, InsertPenelitianAwal } from "../types/penelitian";
 
@@ -8,13 +8,41 @@ import type { FormPermohonanPenelitian, InsertPenelitianAwal } from "../types/pe
 
 export class PenelitianRepository {
 
-  async getByUser(user_id: string):Promise<Penelitian[]> {
+  async getByUser(user_id: string): Promise<Penelitian[]> {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
       .eq("user_id", user_id)
 
-    if(!penelitian){
+    if (!penelitian) {
+      console.log("error ", error)
+      return []
+    }
+    return penelitian
+  }
+
+
+  async getReadyApproval(): Promise<Penelitian[]> {
+    let { data: penelitian, error } = await supabase
+      .from('penelitian')
+      .select('*')
+      .eq("status", StatusPenelitian.Submit)
+
+    if (!penelitian) {
+      console.log("error ", error)
+      return []
+    }
+    return penelitian
+  }
+
+
+  async getReadyEtik(): Promise<Penelitian[]> {
+    let { data: penelitian, error } = await supabase
+      .from('penelitian')
+      .select('*')
+      .eq("status", StatusPenelitian.PenelitianUpload)
+
+    if (!penelitian) {
       console.log("error ", error)
       return []
     }
@@ -36,9 +64,16 @@ export class PenelitianRepository {
         pendanaan: data.pendanaan,
         sponsor: data.sponsor,
         file_permohonan_instansi: data.file_permohonan_instansi,
-        file_draft_penelitian: data.file_draft_penelitian
+        file_draft_penelitian: data.file_draft_penelitian,
+        status: StatusPenelitian.Submit
       }
     ])
+  }
+
+  async approval(id: string, status: boolean) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update({
+      status: status ? StatusPenelitian.TerimaPenelitian : StatusPenelitian.TolakPenelitian
+    }).eq("id", id)
   }
 
   async insertPenelitian(data: any) { // FormPermohonanPenelitian

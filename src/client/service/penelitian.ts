@@ -1,6 +1,6 @@
 import { getToken } from "src/helpers/lib/storage";
-import { GET, HTTP, HTTPUpload } from "../service";
-import type { Penelitian } from "src/helpers/dto/penelitian";
+import { GET, HTTP, HTTPUpload, POST } from "../service";
+import type { Penelitian, StatusPenelitian } from "src/helpers/dto/penelitian";
 
 interface ApiResponse<T> {
   status: boolean;
@@ -16,6 +16,12 @@ export const PenelitianService = {
   },
 
   getPenelitianUser: () => GET<Penelitian[]>({ url: "/api/penelitian" }),
+  getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
+  approvalPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, status }}),
+
+  getPenelitianEtik: () => GET<Penelitian[]>({ url: "/api/penelitian/etik" }),
+  approvalEtikPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/etik/approval", body: { id, status }}),
+
 
   // async createPenelitian(formData: FormData): Promise<ApiResponse<any>> {
   //   try {

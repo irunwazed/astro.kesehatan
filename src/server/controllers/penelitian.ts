@@ -4,6 +4,7 @@ import { uuidv7 } from "../helpers/crypto";
 import type { InsertPenelitianAwal } from "../types/penelitian";
 import { supabase } from "../configs/db";
 import { UserRepository } from "../repositories/user.repository";
+import { StatusPenelitian } from "src/helpers/dto/penelitian";
 
 
 const repository = new PenelitianRepository();
@@ -111,6 +112,62 @@ export class PenelitianController {
     }
   }
 
+  async getPenelitianApproval(req: Request) {
+    try {
+
+      const auth = await userRepository.getAuth(req)
+      if (!auth) {
+        return new Response(
+          JSON.stringify({ message: 'Token tidak valid' }),
+          { status: 401 }
+        );
+      }
+
+      const result = await repository.getReadyApproval()
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data berhasil didapat",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async getPenelitianEtik(req: Request) {
+    try {
+
+      const auth = await userRepository.getAuth(req)
+      if (!auth) {
+        return new Response(
+          JSON.stringify({ message: 'Token tidak valid' }),
+          { status: 401 }
+        );
+      }
+
+      const result = await repository.getReadyEtik()
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data berhasil didapat",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
 
   async insertPenelitian(req: Request) {
     try {
@@ -142,6 +199,48 @@ export class PenelitianController {
         message: "Data penelitian berhasil dibuat",
         data: result
       }), { status: 201 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async approvalPenelitian(request: Request) {
+    try {
+      const { status, id } = await request.json();
+
+      const result = await repository.approval(id, status as number == StatusPenelitian.TerimaPenelitian);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil diapproval",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async approvalEtikPenelitian(request: Request) {
+    try {
+      const { status, id } = await request.json();
+
+      const result = await repository.approval(id, status as number == StatusPenelitian.TerimaPenelitianEtik);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil diapproval",
+        data: result
+      }), { status: 200 });
 
     } catch (error) {
       console.log("error", error)

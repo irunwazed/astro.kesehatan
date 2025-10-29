@@ -17,7 +17,7 @@ export const HTTP = async <T>(method: "GET" | "POST" | "PUT" | "DELETE", url: st
     const res = await fetch(url, {
         method: method,
         headers: headers,
-        body: body,
+        body: JSON.stringify(body),
     });
     if (!res.ok) {
         if (res.status >= 500) {

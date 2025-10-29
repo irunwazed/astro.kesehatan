@@ -17,7 +17,15 @@ routes.set('POST:/login', user.login);
 
 routes.set('GET:/penelitian', penelitan.getPenelitianUser);
 routes.set('POST:/penelitian-awal', penelitan.insertPenelitian);
-routes.set('POST:/penelitian', penelitan.updatePenelitian);
+
+
+
+routes.set('GET:/penelitian/list', penelitan.getPenelitianApproval);
+routes.set('POST:/penelitian/approval', penelitan.approvalPenelitian);
+
+
+routes.set('GET:/penelitian/etik', penelitan.getPenelitianEtik);
+routes.set('POST:/penelitian/etik/approval', penelitan.approvalEtikPenelitian);
 
 routes.set('GET:/download', storage.download);
 

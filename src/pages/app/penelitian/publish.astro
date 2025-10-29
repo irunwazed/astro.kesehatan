@@ -1,0 +1,11 @@
+---
+import MainLayout from 'src/layouts/MainLayout.astro';
+import PenelitianPublishData from 'src/components/modules/penelitian/table-publish';
+
+---
+
+<MainLayout title="Penelitian">
+  <div class="bg-white rounded-lg shadow-sm">
+    <PenelitianPublishData client:load />
+  </div>
+</MainLayout>

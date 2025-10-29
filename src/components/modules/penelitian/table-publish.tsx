@@ -6,7 +6,7 @@ import { getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/
 import { route } from "src/helpers/lib/route";
 
 
-export default function PenelitianData() {
+export default function PenelitianPublishData() {
 
 
     const [data, setData] = createSignal<Penelitian[]>([]);
@@ -14,7 +14,7 @@ export default function PenelitianData() {
 
     const getData = async () => {
         setLoading(true);
-        const data = await PenelitianService.getPenelitianUser()
+        const data = await PenelitianService.getPenelitianEtik()
 
         const result = data.data?.map((dt) => {
             dt.status_nama = getStatusPenelitianNama(dt.status as number)
@@ -31,12 +31,13 @@ export default function PenelitianData() {
         getData()
     })
 
-    return <div class="p-4">
 
-        <Button onclick={() => {
-            route.push("/app/penelitian/awal")
-        }}>Ajukan Permohonan Penelitian</Button>
-        <br />
+    const setApproval = async (row:Penelitian, status:StatusPenelitian) => {
+        await PenelitianService.approvalEtikPenelitian(row.id, status)
+        getData()
+    }
+
+    return <div class="p-4">
         <Table
             columns={[
                 { key: "no_idx", header: "No", width: "10px" },
@@ -68,23 +69,25 @@ export default function PenelitianData() {
 
             actions={[
                 {
-                    label: "Input Penelitian",
+                    label: "Terima",
                     icon: "delete",
-                    class: "bg-blue-500 text-white hover:bg-blue-600",
+                    class: "bg-green-500 text-white hover:bg-green-600",
                     onClick: (row) => {
-                        route.push("/app/penelitian/form1?id="+row.id)
+                        setApproval(row, StatusPenelitian.TerimaPenelitian)
                     },
                     // disabled: (row) => row.status != "DRAFT"
-                    hidden: (row) => row.status <= StatusPenelitian.Submit,     // ❌ user id=2 tombol delete disembunyikan
+                    // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
                 },
-                // {
-                //     label: "Reset Password",
-                //     icon: "update",
-                //     class: "bg-red-500 text-white hover:bg-red-600",
-                //     onClick: resetPassword,
-                //     disabled: (row) => row.status == "ROLLBACK"
-                //     // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
-                // },
+                {
+                    label: "Tolak",
+                    icon: "delete",
+                    class: "bg-red-500 text-white hover:bg-red-600",
+                    onClick: (row) => {
+                        setApproval(row, StatusPenelitian.TolakPenelitian)
+                    },
+                    // disabled: (row) => row.status != "DRAFT"
+                    // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
+                },
             ]}
         />
     </div>;
