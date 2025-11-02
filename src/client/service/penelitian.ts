@@ -29,7 +29,7 @@ export const PenelitianService = {
   approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),
 
   getPenelitianEtik: () => GET<Penelitian[]>({ url: "/api/penelitian/etik" }),
-  approvalEtikPenelitian: (id:string, nomor:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/etik/approval", body: { id, nomor, status, alasan }}),
+  approvalEtikPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/etik/approval", formData),
 
 
   // async createPenelitian(formData: FormData): Promise<ApiResponse<any>> {

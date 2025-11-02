@@ -113,11 +113,12 @@ export class PenelitianRepository {
     }).eq("id", id)
   }
 
-  async approvalEtik(id: string, nomor:string, status: boolean, alasan:string) { // FormPermohonanPenelitian
+  async approvalEtik(id: string, nomor:string, status: boolean, alasan:string, file_etik:string) { // FormPermohonanPenelitian
     return await supabase.from('penelitian').update({
       nomor: nomor,
       alasan: alasan,
-      status: status ? StatusPenelitian.PublishPenelitian : StatusPenelitian.TolakPenelitianEtik
+      status: status ? StatusPenelitian.PublishPenelitian : StatusPenelitian.TolakPenelitianEtik,
+      file_etik: file_etik
     }).eq("id", id)
   }
 

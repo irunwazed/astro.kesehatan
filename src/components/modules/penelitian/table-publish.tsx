@@ -16,6 +16,7 @@ type FormPenelitian = {
     status: number
     nomor: string
     alasan: string
+    file_etik: string | File
 }
 
 export default function PenelitianPublishData() {
@@ -24,7 +25,8 @@ export default function PenelitianPublishData() {
         id: "",
         nomor: "",
         status: 0,
-        alasan: ""
+        alasan: "",
+        file_etik: ""
     }
 
     const [data, setData] = createSignal<Penelitian[]>([]);
@@ -82,6 +84,8 @@ export default function PenelitianPublishData() {
             })
             return false
         }
+
+
         return true
     }
 
@@ -90,9 +94,31 @@ export default function PenelitianPublishData() {
         const check = valid()
         if (!check) return
 
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('alasan', form().alasan);
+        formData.append('id', form().id);
+        formData.append('nomor', form().nomor);
+        formData.append('status', form().status.toString());
+        formData.append('file_etik', form().file_etik);
+
+        const maxFileSize = 5 * 1024 * 1024; // 5MB
+        formData.forEach((value, key) => {
+            if (value instanceof File && value.size > maxFileSize) {
+                showAlert({
+                    title: "Validasi Error",
+                    message: "File terlalu besar, maximal 5 mb",
+                    icon: "error"
+                });
+                return;
+                // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
+            }
+        });
+
 
         setLoadingSave(true)
-        const result = await PenelitianService.approvalEtikPenelitian(form().id, form().nomor, form().status, form().alasan);
+        const result = await PenelitianService.approvalEtikPenelitian(formData);
         getData()
         setOpen(false)
         setLoadingSave(false)
@@ -147,16 +173,6 @@ export default function PenelitianPublishData() {
                     // disabled: (row) => row.status != "DRAFT"
                     // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
                 },
-                // {
-                //     label: "Tolak",
-                //     icon: "delete",
-                //     class: "bg-red-500 text-white hover:bg-red-600",
-                //     onClick: (row) => {
-                //         setApproval(row, StatusPenelitian.TolakPenelitianEtik)
-                //     },
-                //     // disabled: (row) => row.status != "DRAFT"
-                //     // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
-                // },
             ]}
         />
 
@@ -170,14 +186,6 @@ export default function PenelitianPublishData() {
             <div class="flex flex-col gap-4 mt-4">
 
 
-                <div>
-                    <FormLabel for="nomor" text="Nomor" />
-                    <Input
-                        id="nomor"
-                        value={form()?.nomor}
-                        onInput={(e) => setForm({ ...form(), nomor: e.currentTarget.value })}
-                    />
-                </div>
                 <div>
                     <FormLabel for="status" text="Status" />
                     <Select options={[
@@ -195,6 +203,28 @@ export default function PenelitianPublishData() {
                             id="alasan"
                             value={form()?.alasan}
                             onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                        />
+                    </div>
+                </Show>
+                <Show when={form().status == StatusPenelitian.PublishPenelitian}>
+
+                    <div>
+                        <FormLabel for="nomor" text="Nomor" />
+                        <Input
+                            id="nomor"
+                            value={form()?.nomor}
+                            onInput={(e) => setForm({ ...form(), nomor: e.currentTarget.value })}
+                        />
+                    </div>
+
+
+                    <div>
+                        <FormLabel for="file_etik" text="File Etik" />
+                        <Input
+                            id="file_etik"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={(e) => setForm({ ...form(), file_etik: e.currentTarget.files?.[0] as File })}
                         />
                     </div>
                 </Show>

@@ -1,6 +1,6 @@
 
 
-export enum StatusPenelitian  {
+export enum StatusPenelitian {
     Draft = 101,
     Submit = 102,
     TerimaPenelitian = 201,
@@ -14,31 +14,31 @@ export enum StatusPenelitian  {
 }
 
 export const getStatusPenelitianNama = (status: number) => {
-    if(status == 101) return "Draft"
-    if(status == 102) return "Submit"
-    if(status == 201) return "Penelitian Diterima"
-    if(status == 202) return "Penelitian Ditolak"
-    if(status == 205) return "Penelitian Upload"
-    if(status == 301) return "TerimaPenelitianEtik"
-    if(status == 302) return "TolakPenelitianEtik"
-    if(status == 401) return "Expired"
-    if(status == 402) return "Permintaan Perpanjangan"
-    if(status == 501) return "Publish Penelitian"
+    if (status == 101) return "Draft"
+    if (status == 102) return "Submit"
+    if (status == 201) return "Penelitian Diterima"
+    if (status == 202) return "Penelitian Ditolak"
+    if (status == 205) return "Penelitian Upload"
+    if (status == 301) return "TerimaPenelitianEtik"
+    if (status == 302) return "TolakPenelitianEtik"
+    if (status == 401) return "Expired"
+    if (status == 402) return "Permintaan Perpanjangan"
+    if (status == 501) return "Publish Penelitian"
     return ""
 }
 
 export const getStatusPenelitianData = (status: number) => {
-    if(status == 101) return {name: "Draft", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 102) return {name: "Submit", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 201) return {name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 202) return {name: "Penelitian Ditolak", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 205) return {name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 301) return {name: "TerimaPenelitianEtik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 302) return {name: "TolakPenelitianEtik", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 401) return {name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 402) return {name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    if(status == 501) return {name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
-    return {name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if (status == 101) return { name: "Draft", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 102) return { name: "Submit", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 201) return { name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 202) return { name: "Penelitian Ditolak", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 205) return { name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 301) return { name: "TerimaPenelitianEtik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 302) return { name: "TolakPenelitianEtik", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 401) return { name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 402) return { name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 501) return { name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    return { name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
 }
 
 
@@ -101,44 +101,45 @@ export interface FormPerpanjangPenelitian {
 }
 
 export interface Penelitian {
-  id: string;
-  created_at: string;              // ISO date string
-  updated_at: string | null;
-  deleted_at: string | null;
-  status: number;                  // contoh: 'draft' | 'submitted' | 'approved'
-  status_nama?: string;             // contoh: 'draft' | 'submitted' | 'approved'
-  alasan?: string;  
-  jenis: string;                   // contoh: 'skripsi' | 'tesis' | 'mandiri'
-  user_id: string;
+    id: string;
+    created_at: string;              // ISO date string
+    updated_at: string | null;
+    deleted_at: string | null;
+    status: number;                  // contoh: 'draft' | 'submitted' | 'approved'
+    status_nama?: string;             // contoh: 'draft' | 'submitted' | 'approved'
+    alasan?: string;
+    jenis: string;                   // contoh: 'skripsi' | 'tesis' | 'mandiri'
+    user_id: string;
 
-  nama: string;
-  tujuan: string;
-  deskripsi: string;
-  variabel_lain: string | null;
-  jumlah_minimal_sampel: number | null;
+    nama: string;
+    tujuan: string;
+    deskripsi: string;
+    variabel_lain: string | null;
+    jumlah_minimal_sampel: number | null;
 
-  waktu_awal_sample: string | null;   // ISO date string
-  waktu_akhir_sample: string | null;  // ISO date string
+    waktu_awal_sample: string | null;   // ISO date string
+    waktu_akhir_sample: string | null;  // ISO date string
 
-  pendanaan: string | null;
-  sponsor: string | null;
+    pendanaan: string | null;
+    sponsor: string | null;
 
-  file_permohonan_instansi: string | null;
-  file_draft_penelitian: string | null;
-  mahasiswa_proposal: string | null;
-  file_surat_izin_penelitian: string | null;
-  file_formulir_telaah_penelitian: string | null;
-  file_formulir_ketersediaan_penelitian: string | null;
-  file_informasi_calon_subjek: string | null;
-  file_pernyataan_konflik: string | null;
-  file_proposal_penelitian: string | null;
-  file_surat_kaji_etik: string | null;
-  file_cv_peneliti: string | null;
-  file_cv_tim_peneliti: string | null;
-  file_persetujuan: string | null;
-  file_kuesioner: string | null;
-  file_daftar_pustaka: string | null;
-  file_bukti_transfer: string | null;
+    file_permohonan_instansi: string | null;
+    file_draft_penelitian: string | null;
+    mahasiswa_proposal: string | null;
+    file_surat_izin_penelitian: string | null;
+    file_formulir_telaah_penelitian: string | null;
+    file_formulir_ketersediaan_penelitian: string | null;
+    file_informasi_calon_subjek: string | null;
+    file_pernyataan_konflik: string | null;
+    file_proposal_penelitian: string | null;
+    file_surat_kaji_etik: string | null;
+    file_cv_peneliti: string | null;
+    file_cv_tim_peneliti: string | null;
+    file_persetujuan: string | null;
+    file_kuesioner: string | null;
+    file_daftar_pustaka: string | null;
+    file_bukti_transfer: string | null;
+    file_etik: string | null
 }
 
 

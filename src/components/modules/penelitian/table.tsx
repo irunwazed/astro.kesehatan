@@ -225,6 +225,17 @@ export default function PenelitianData() {
                         return row.file_bukti_transfer == "" || row.file_bukti_transfer == null
                     }
                 },
+                {
+                    label: "File Etik",
+                    icon: "download",
+                    class: "bg-orange-500 text-white hover:bg-orange-600",
+                    onClick: (row) => {
+                        route.download(row.file_etik ?? "")
+                    },
+                    hidden: (row) => {
+                        return row.file_etik == "" || row.file_etik == null
+                    }
+                },
             ]}
             actions={[
                 {

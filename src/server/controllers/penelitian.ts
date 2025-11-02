@@ -416,9 +416,30 @@ export class PenelitianController {
 
   async approvalEtikPenelitian(request: Request) {
     try {
-      const { status, id, nomor, alasan } = await request.json();
+      // const { status, id, nomor, alasan } = await request.json();
 
-      const result = await repository.approvalEtik(id, nomor, (status as number == StatusPenelitian.TerimaPenelitianEtik || status as number == StatusPenelitian.PublishPenelitian), alasan);
+      const formData = await request.formData();
+
+
+      const data: {
+        id: string,
+        status: number
+        nomor: string
+        alasan: string
+        file_etik: string
+      } = {
+        id: formData.get('id') as string,
+        nomor: formData.get('nomor') as string,
+        status: parseInt(formData.get('nomor') as string),
+        alasan: formData.get('alasan') as string,
+        file_etik: "",
+      }
+
+      const file_etik = formData.get("file_etik") as File;
+      const file_etik_path = await uploadFilePermohonan("file_etik" + "_" + uuidv7() + ".pdf", file_etik);
+      data.file_etik = file_etik_path ?? ""
+
+      const result = await repository.approvalEtik(data.id, data.nomor, (data.status as number == StatusPenelitian.TerimaPenelitianEtik || data.status as number == StatusPenelitian.PublishPenelitian), data.alasan, data.file_etik);
 
       return new Response(JSON.stringify({
         status: true,

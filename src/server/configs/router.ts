@@ -1,5 +1,5 @@
 import { HomeController } from "../controllers/home";
-import { LoginController } from "../controllers/login";
+// import { LoginController } from "../controllers/login";
 import { PenelitianController } from "../controllers/penelitian";
 import { StorageController } from "../controllers/storage";
 import { UserController } from "../controllers/user";
@@ -21,10 +21,8 @@ routes.set('POST:/penelitian', penelitan.insertPenelitianBerkas);
 routes.set('POST:/penelitian-awal', penelitan.insertPenelitian);
 routes.set('POST:/penelitian-perpanjang', penelitan.insertPenelitianPerpanjang);
 
-
 routes.set('GET:/penelitian/list', penelitan.getPenelitianApproval);
 routes.set('POST:/penelitian/approval', penelitan.approvalPenelitian);
-
 
 routes.set('GET:/penelitian/etik', penelitan.getPenelitianEtik);
 routes.set('POST:/penelitian/etik/approval', penelitan.approvalEtikPenelitian);
