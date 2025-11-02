@@ -5,9 +5,10 @@ import Input from "@solid-ui/Input";
 import Modal from "@solid-ui/Modal";
 import Select from "@solid-ui/Select";
 import { Table } from "@solid-ui/Table";
-import { createSignal, onMount } from "solid-js";
+import Textarea from "@solid-ui/Textarea";
+import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
-import { getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
+import { getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 
 type FormPenelitian = {
@@ -58,7 +59,7 @@ export default function PenelitianPublishData() {
 
     const valid = () => {
 
-        if(form().status == 0){
+        if (form().status == 0) {
             showAlert({
                 title: "Peringatan",
                 message: "Pilih Status Approval"
@@ -66,7 +67,7 @@ export default function PenelitianPublishData() {
             return false
         }
 
-        if(form().id == ""){
+        if (form().id == "") {
             showAlert({
                 title: "Peringatan",
                 message: "Pilih Penelitian"
@@ -74,7 +75,7 @@ export default function PenelitianPublishData() {
             return false
         }
 
-        if(form().nomor == ""){
+        if (form().nomor == "") {
             showAlert({
                 title: "Peringatan",
                 message: "Masukkan Nomor"
@@ -87,7 +88,7 @@ export default function PenelitianPublishData() {
     const handleSave = async () => {
 
         const check = valid()
-        if(!check) return
+        if (!check) return
 
 
         setLoadingSave(true)
@@ -101,7 +102,14 @@ export default function PenelitianPublishData() {
         <Table
             columns={[
                 { key: "no_idx", header: "No", width: "10px" },
-                { key: "status_nama", header: "Status" },
+                {
+                    key: "status_nama", header: "Status", render: (row) => {
+                        return <div>
+                            <div class={getStatusPenelitianData(row.status).class}>{getStatusPenelitianData(row.status).name}</div>
+                        </div>
+                    },
+                    width: "200px",
+                },
                 { key: "nama", header: "Nama" },
                 { key: "deskripsi", header: "deskripsi" },
                 { key: "tujuan", header: "tujuan" },
@@ -177,17 +185,19 @@ export default function PenelitianPublishData() {
                         { label: "Tolak", value: StatusPenelitian.TolakPenelitianEtik.toString() },
                         { label: "Terima", value: StatusPenelitian.PublishPenelitian.toString() }
                     ]}
-                     onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value) })} />
- 
+                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: parseInt(e.currentTarget.value) == StatusPenelitian.PublishPenelitian ? "" : "" })} />
+
                 </div>
-                <div>
-                    <FormLabel for="alasan" text="Alasan" />
-                    <Input
-                        id="alasan"
-                        value={form()?.alasan}
-                        onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
-                    />
-                </div>
+                <Show when={form().status > 0}>
+                    <div>
+                        <FormLabel for="alasan" text="Alasan" />
+                        <Textarea
+                            id="alasan"
+                            value={form()?.alasan}
+                            onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                        />
+                    </div>
+                </Show>
 
                 <hr class="my-2 border-gray-200" />
                 <div class="flex justify-end gap-2">

@@ -5,9 +5,10 @@ import Input from "@solid-ui/Input";
 import Modal from "@solid-ui/Modal";
 import Select from "@solid-ui/Select";
 import { Table } from "@solid-ui/Table";
-import { createSignal, onMount } from "solid-js";
+import Textarea from "@solid-ui/Textarea";
+import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
-import { getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
+import { getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 
 type FormPenelitian = {
@@ -52,44 +53,44 @@ export default function PenelitianApprovalData() {
     })
 
 
-    const setApproval = async (row:Penelitian) => {
-        setForm({...form(), id: row.id})
+    const setApproval = async (row: Penelitian) => {
+        setForm({ ...form(), id: row.id })
         setOpen(true)
     }
 
     const valid = () => {
-    
-            if(form().status == 0){
-                showAlert({
-                    title: "Peringatan",
-                    message: "Pilih Status Approval"
-                })
-                return false
-            }
-    
-            if(form().id == ""){
-                showAlert({
-                    title: "Peringatan",
-                    message: "Pilih Penelitian"
-                })
-                return false
-            }
-    
-            if(form().jenis == ""){
-                showAlert({
-                    title: "Peringatan",
-                    message: "Masukkan Jenis"
-                })
-                return false
-            }
-            return true
+
+        if (form().status == 0) {
+            showAlert({
+                title: "Peringatan",
+                message: "Pilih Status Approval"
+            })
+            return false
         }
+
+        if (form().id == "") {
+            showAlert({
+                title: "Peringatan",
+                message: "Pilih Penelitian"
+            })
+            return false
+        }
+
+        if (form().jenis == "") {
+            showAlert({
+                title: "Peringatan",
+                message: "Masukkan Jenis"
+            })
+            return false
+        }
+        return true
+    }
 
 
     const handleSave = async () => {
 
         const check = valid()
-        if(!check) return
+        if (!check) return
 
 
         setLoadingSave(true)
@@ -103,7 +104,14 @@ export default function PenelitianApprovalData() {
         <Table
             columns={[
                 { key: "no_idx", header: "No", width: "10px" },
-                { key: "status_nama", header: "Status" },
+                {
+                    key: "status_nama", header: "Status", render: (row) => {
+                        return <div>
+                            <div class={getStatusPenelitianData(row.status).class}>{getStatusPenelitianData(row.status).name}</div>
+                        </div>
+                    },
+                    width: "200px",
+                },
                 { key: "nama", header: "Nama" },
                 { key: "deskripsi", header: "deskripsi" },
                 { key: "tujuan", header: "tujuan" },
@@ -143,68 +151,70 @@ export default function PenelitianApprovalData() {
             ]}
         />
 
-         <Modal
-                    open={open()}
-                    loading={loadingSave()}
-                    title="Tambah Data"
-                    onClose={() => !loadingSave() && setOpen(false)}
-                >
-        
-                    <div class="flex flex-col gap-4 mt-4">
-        
+        <Modal
+            open={open()}
+            loading={loadingSave()}
+            title="Tambah Data"
+            onClose={() => !loadingSave() && setOpen(false)}
+        >
 
-                        <div>
-                            <FormLabel for="jenis" text="Jenis" />
-                            <Select options={[
-                                { label: "Pilih Jenis", value: "" },
-                                { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
-                                { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
-                                { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
-                                { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
-                                { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
-                                { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
-                            ]}
-                             onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
-         
-                        </div>
-        
-                        <div>
-                            <FormLabel for="status" text="Status" />
-                            <Select options={[
-                                { label: "Pilih Status", value: "0" },
-                                { label: "Tolak", value: StatusPenelitian.TolakPenelitian.toString() },
-                                { label: "Terima", value: StatusPenelitian.TerimaPenelitian.toString() }
-                            ]}
-                             onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value) })} />
-         
-                        </div>
-                        <div>
-                            <FormLabel for="alasan" text="Alasan" />
-                            <Input
-                                id="alasan"
-                                value={form()?.alasan}
-                                onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
-                            />
-                        </div>
-        
-                        <hr class="my-2 border-gray-200" />
-                        <div class="flex justify-end gap-2">
-                            <button
-                                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                                onClick={() => setOpen(false)}
-                                disabled={loadingSave()}
-                            >
-                                Batal
-                            </button>
-                            <button
-                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                onClick={handleSave}
-                                disabled={loadingSave()}
-                            >
-                                Simpan
-                            </button>
-                        </div>
+            <div class="flex flex-col gap-4 mt-4">
+
+
+                <div>
+                    <FormLabel for="jenis" text="Jenis" />
+                    <Select options={[
+                        { label: "Pilih Jenis", value: "" },
+                        { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
+                        { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
+                        { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
+                        { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
+                        { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
+                        { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
+                    ]}
+                        onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
+
+                </div>
+
+                <div>
+                    <FormLabel for="status" text="Status" />
+                    <Select options={[
+                        { label: "Pilih Status", value: "0" },
+                        { label: "Tolak", value: StatusPenelitian.TolakPenelitian.toString() },
+                        { label: "Terima", value: StatusPenelitian.TerimaPenelitian.toString() }
+                    ]}
+                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitian ? "Terima kasih, data sudah kami verifikasi. Silahkan lanjut icon \"Input Berkas Penelitian\"" : "Mohon maaf, kami masih butuh informasi tambahan, Silahkan hubungikami di 088219942081" })} />
+                </div>
+
+                <Show when={form().status > 0}>
+                    <div>
+                        <FormLabel for="alasan" text="Alasan" />
+                        <Textarea
+                            id="alasan"
+                            value={form()?.alasan}
+                            onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                        />
                     </div>
-                </Modal>
+                </Show>
+
+                <hr class="my-2 border-gray-200" />
+                <div class="flex justify-end gap-2">
+                    <button
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        onClick={() => setOpen(false)}
+                        disabled={loadingSave()}
+                    >
+                        Batal
+                    </button>
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={handleSave}
+                        disabled={loadingSave()}
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </div>;
 }

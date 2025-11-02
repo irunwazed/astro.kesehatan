@@ -1,9 +1,9 @@
 import { showAlert } from "@solid-ui/alertStore";
 import Button from "@solid-ui/Button";
 import { Table } from "@solid-ui/Table";
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
-import { getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
+import { getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 
 
@@ -18,7 +18,7 @@ export default function PenelitianData() {
         const data = await PenelitianService.getPenelitianUser()
 
         const result = data.data?.map((dt) => {
-            dt.status_nama = getStatusPenelitianNama(dt.status as number)
+            // dt.status_nama = getStatusPenelitianNama(dt.status as number)
             return dt
         }) ?? []
 
@@ -37,12 +37,22 @@ export default function PenelitianData() {
         <div class="flex justify-between mb-6">
             <Button variant="info" onclick={() => {
                 route.push("/app/penelitian/awal")
-            }}>Ajukan Permohonan Penelitian</Button>
+            }}>Pengajuan Studi Awal</Button>
         </div>
         <Table
             columns={[
                 { key: "no_idx", header: "No", width: "10px" },
-                { key: "status_nama", header: "Status" },
+                {
+                    key: "status_nama", header: "Status", render: (row) => {
+                        return <div>
+                            <div class={getStatusPenelitianData(row.status).class}>{getStatusPenelitianData(row.status).name}</div>
+                            <Show when={row.alasan}>
+                                <span class="align-middle">({row.alasan})</span>
+                            </Show>
+                        </div>
+                    },
+                    width: "200px",
+                },
                 { key: "nama", header: "Nama" },
                 { key: "deskripsi", header: "deskripsi" },
                 { key: "tujuan", header: "tujuan" },
@@ -218,22 +228,24 @@ export default function PenelitianData() {
             ]}
             actions={[
                 {
-                    label: "Input Penelitian",
+                    label: "Input Berkas Penelitian",
                     icon: "delete",
                     class: "bg-blue-500 text-white hover:bg-blue-600",
                     onClick: (row) => {
                         route.push("/app/penelitian/form1?id=" + row.id)
                     },
-                    hidden: (row) => row.status != StatusPenelitian.TerimaPenelitian,     // ❌ user id=2 tombol delete disembunyikan
+                    hidden: (row) => row.status > StatusPenelitian.TerimaPenelitian,     // ❌ user id=2 tombol delete disembunyikan
+                    disabled: (row) => row.status != StatusPenelitian.TerimaPenelitian,    
                 },
                 {
-                    label: "Perpanjang",
+                    label: "Perpanjang Penelitian",
                     icon: "update",
                     class: "bg-red-500 text-white hover:bg-red-600",
                     onClick: (row) => {
                         route.push("/app/penelitian/perpanjang?id=" + row.id)
                     },
-                    hidden: (row) => row.status != StatusPenelitian.PublishPenelitian,     // ❌ user id=2 tombol delete disembunyikan
+                    hidden: (row) => row.status != StatusPenelitian.PublishPenelitian,
+                    // disabled: (row) => row.status != StatusPenelitian.PublishPenelitian,     // ❌ user id=2 tombol delete disembunyikan
                 },
             ]}
         />

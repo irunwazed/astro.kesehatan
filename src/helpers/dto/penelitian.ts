@@ -27,6 +27,20 @@ export const getStatusPenelitianNama = (status: number) => {
     return ""
 }
 
+export const getStatusPenelitianData = (status: number) => {
+    if(status == 101) return {name: "Draft", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 102) return {name: "Submit", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 201) return {name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 202) return {name: "Penelitian Ditolak", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 205) return {name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 301) return {name: "TerimaPenelitianEtik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 302) return {name: "TolakPenelitianEtik", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 401) return {name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 402) return {name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    if(status == 501) return {name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+    return {name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1"}
+}
+
 
 export type GroupResponse = {
     id: string
@@ -92,7 +106,8 @@ export interface Penelitian {
   updated_at: string | null;
   deleted_at: string | null;
   status: number;                  // contoh: 'draft' | 'submitted' | 'approved'
-  status_nama?: string;  
+  status_nama?: string;             // contoh: 'draft' | 'submitted' | 'approved'
+  alasan?: string;  
   jenis: string;                   // contoh: 'skripsi' | 'tesis' | 'mandiri'
   user_id: string;
 
