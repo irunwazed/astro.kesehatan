@@ -116,7 +116,8 @@ const { title } = Astro.props;
         <header class="mb-8">
           <div class="flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">{title}</h1>
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4" x-data="{ open: false }">
+              <!-- Bell icon -->
               <button class="p-2 text-gray-600 hover:text-gray-800">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -129,14 +130,53 @@ const { title } = Astro.props;
                   ></path>
                 </svg>
               </button>
-              <button class="flex items-center space-x-2">
-                <img
-                  class="h-8 w-8 rounded-full"
-                  src="https://via.placeholder.com/32"
-                  alt="User avatar"
-                />
-                <span class="text-sm font-medium text-gray-700">Admin</span>
-              </button>
+
+              <!-- Avatar + name -->
+              <div class="relative">
+                <button
+                  class="flex items-center space-x-2 focus:outline-none"
+                  @click="open = !open"
+                >
+                  <img
+                    class="h-8 w-8 rounded-full"
+                    src="https://via.placeholder.com/32"
+                    alt="User avatar"
+                  />
+                  <span class="text-sm font-medium text-gray-700">Admin</span>
+                  <svg
+                    class="w-4 h-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+
+                <!-- Dropdown -->
+                <div
+                  x-show="open"
+                  @click.away="open = false"
+                  class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50"
+                >
+                  <a
+                    href="/"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Profil
+                  </a>
+                  <button
+                    id="logoutBtn"
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    Keluar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </header>

@@ -1,12 +1,12 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import FormLabel from "@solid-ui/FormLabel";
 import Input from "@solid-ui/Input";
 import Button from "@solid-ui/Button";
 import { showAlert } from "@solid-ui/alertStore";
-import type { FormPermohonanAwalPenelitian, FormPermohonanPenelitian, GroupResponse } from "src/helpers/dto/penelitian";
-import { GroupService } from "src/client/service/group";
+import type { FormPermohonanAwalPenelitian, GroupResponse } from "src/helpers/dto/penelitian";
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
+import Select from "@solid-ui/Select";
 
 export default function FormPenelitianAwal() {
 
@@ -180,7 +180,7 @@ export default function FormPenelitianAwal() {
         if (!form.waktu_akhir_sample) errors.push("waktu_akhir_sample Peneliti wajib diisi");
         if (!form.pendanaan) errors.push("Pendanaan Peneliti wajib diisi");
         if (!form.file_permohonan_instansi) errors.push("Pendanaan Peneliti wajib diisi");
-        
+
         if (!form['file_draft_penelitian']) errors.push(`Draft Penelitian wajib diupload`);
         if (!form['file_permohonan_instansi']) errors.push(`Surat Permohonan Instansi wajib diupload`);
 
@@ -284,7 +284,7 @@ export default function FormPenelitianAwal() {
         <div class="p-6">
 
             <div class="bg-white shadow-md rounded-lg p-6">
-                <h2 class="text-xl font-semibold mb-6">Form Permohonan Penelitian</h2>
+                <h2 class="text-xl font-semibold mb-6">Form Pengajuan Studi Awal</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
@@ -334,41 +334,50 @@ export default function FormPenelitianAwal() {
                         />
                     </div>
 
-                    <div>
-                        <FormLabel for="waktu_awal_sample" text="Jangka Waktu Awal Pengambilan Sampel data" />
-                        <Input
-                            id="waktu_awal_sample"
-                            type="number"
-                            value={form().waktu_awal_sample}
-                            onInput={(e) => setForm({ ...form(), waktu_awal_sample: Number(e.currentTarget.value) })}
-                        />
+                    <div class="flex gap-2">
+                        <div>
+                            <FormLabel for="waktu_awal_sample" text="Jangka Waktu Awal Pengambilan Sampel data (Tahun)" />
+                            <Input
+                                id="waktu_awal_sample"
+                                type="number"
+                                value={form().waktu_awal_sample}
+                                onInput={(e) => setForm({ ...form(), waktu_awal_sample: Number(e.currentTarget.value) })}
+                            />
+                        </div>
+                        <div>
+                            <FormLabel for="waktu_akhir_sample" text="Jangka Waktu Akhir Pengambilan Sampel data (Tahun)" />
+                            <Input
+                                id="waktu_akhir_sample"
+                                type="number"
+                                value={form().waktu_akhir_sample}
+                                onInput={(e) => setForm({ ...form(), waktu_akhir_sample: Number(e.currentTarget.value) })}
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <FormLabel for="waktu_akhir_sample" text="Jangka Waktu Akhir Pengambilan Sampel data" />
-                        <Input
-                            id="waktu_akhir_sample"
-                            type="number"
-                            value={form().waktu_akhir_sample}
-                            onInput={(e) => setForm({ ...form(), waktu_akhir_sample: Number(e.currentTarget.value) })}
-                        />
+
+
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <FormLabel for="pendanaan" text="Asal pendanaan penelitian? " />
+                            <Select id="pendanaan" options={[
+                                { label: "Pilih Pendanaan", value: "0" },
+                                { label: "Mandiri", value: "1" },
+                                { label: "Sponsor", value: "2" }
+                            ]}
+                                onInput={(e) => setForm({ ...form(), pendanaan: parseInt(e.currentTarget.value) })} />
+                        </div>
+                        <Show when={form().pendanaan == 2}>
+                            <div>
+                                <FormLabel for="sponsor" text="Jika sponsor, sebutkan nama sponsornya" />
+                                <Input
+                                    id="sponsor"
+                                    value={form().sponsor}
+                                    onInput={(e) => setForm({ ...form(), sponsor: (e.currentTarget.value) })}
+                                />
+                            </div>
+                        </Show>
                     </div>
-                    <div>
-                        <FormLabel for="pendanaan" text="Asal pendanaan penelitian? " />
-                        <Input
-                            id="pendanaan"
-                            type="number"
-                            value={form().pendanaan}
-                            onInput={(e) => setForm({ ...form(), pendanaan: Number(e.currentTarget.value) })}
-                        />
-                    </div>
-                    <div>
-                        <FormLabel for="sponsor" text="Jika sponsor, sebutkan nama sponsornya" />
-                        <Input
-                            id="sponsor"
-                            value={form().sponsor}
-                            onInput={(e) => setForm({ ...form(), sponsor: (e.currentTarget.value) })}
-                        />
-                    </div>
+
 
 
 
@@ -393,7 +402,7 @@ export default function FormPenelitianAwal() {
                         />
                     </div>
 
-                    
+
                 </div>
 
                 <div class="flex justify-end gap-2 mt-6">

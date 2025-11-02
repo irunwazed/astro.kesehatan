@@ -47,7 +47,7 @@ import Layout from "../layouts/Layout.astro";
                 </div>
 
                 <!-- Remember + Forgot -->
-                <div class="flex items-center justify-between text-sm">
+                <!-- <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center">
                         <input
                             type="checkbox"
@@ -58,7 +58,7 @@ import Layout from "../layouts/Layout.astro";
                     <a href="#" class="text-blue-600 hover:underline"
                         >Lupa password?</a
                     >
-                </div>
+                </div> -->
 
                 <!-- Tombol Login -->
                 <button
@@ -80,11 +80,11 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
     <script>
-import { route } from "src/helpers/lib/route";
-import { setCookie } from "src/helpers/lib/storage";
+        import { route } from "src/helpers/lib/route";
+        import { setCookie } from "src/helpers/lib/storage";
 
         interface LoginResponse {
-            message?:string;
+            message?: string;
             access_token?: string;
             expires_in?: number;
             expires_at?: number;
@@ -127,15 +127,19 @@ import { setCookie } from "src/helpers/lib/storage";
                     body: JSON.stringify({ email, password }),
                 });
 
-                const result: {data:LoginResponse} = await response.json();
+                const result: { data: LoginResponse } = await response.json();
 
                 if (response.ok) {
-                    console.log("result", result)
+                    console.log("result", result);
                     alert(
                         `✅ Login berhasil! Selamat datang, ${result.data.user?.email ?? "pengguna"}`,
                     );
-                    setCookie("token", result.data.access_token ?? "", result.data.expires_in)
-                    route.push("/app")
+                    setCookie(
+                        "token",
+                        result.data.access_token ?? "",
+                        result.data.expires_in,
+                    );
+                    route.push("/app");
                 } else {
                     alert(
                         `❌ Gagal login: ${result.data.message ?? "Email atau password salah"}`,
