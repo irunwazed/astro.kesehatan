@@ -16,8 +16,10 @@ routes.set('GET:/', HomeController);
 routes.set('POST:/login', user.login);
 
 routes.set('GET:/penelitian', penelitan.getPenelitianUser);
+routes.set('GET:/penelitian/data', penelitan.getPenelitianById);
+routes.set('POST:/penelitian', penelitan.insertPenelitianBerkas);
 routes.set('POST:/penelitian-awal', penelitan.insertPenelitian);
-
+routes.set('POST:/penelitian-perpanjang', penelitan.insertPenelitianPerpanjang);
 
 
 routes.set('GET:/penelitian/list', penelitan.getPenelitianApproval);

@@ -6,6 +6,7 @@ import { showAlert } from "@solid-ui/alertStore";
 import type { FormPermohonanAwalPenelitian, FormPermohonanPenelitian, GroupResponse } from "src/helpers/dto/penelitian";
 import { GroupService } from "src/client/service/group";
 import { PenelitianService } from "src/client/service/penelitian";
+import { route } from "src/helpers/lib/route";
 
 export default function FormPenelitianAwal() {
 
@@ -259,6 +260,10 @@ export default function FormPenelitianAwal() {
             setForm(formDefault);
             setOpen(false);
 
+            setTimeout(() => {
+                route.push("/app/penelitian")
+            }, 2000)
+
             // Refresh data
             // getData();
 
@@ -277,9 +282,6 @@ export default function FormPenelitianAwal() {
 
     return (
         <div class="p-6">
-            <div class="flex justify-between mb-6">
-                <Button variant="info" onclick={() => setCreate()}>Tambah</Button>
-            </div>
 
             <div class="bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-6">Form Permohonan Penelitian</h2>

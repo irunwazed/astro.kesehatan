@@ -1,7 +1,7 @@
 import type { JSX } from "solid-js";
-import { FaBrandsSearchengin, FaRegularTrashCan, FaSolidPen } from 'solid-icons/fa'
-
-type IconName = "user" | "home" | "settings" | "trash" | "pencil" | "plus" | "search";
+import { FaBrandsSearchengin, FaRegularTrashCan, FaSolidPen, FaSolidDownload, FaSolidCheck } from 'solid-icons/fa'
+ 
+type IconName = "user" | "home" | "settings" | "trash" | "pencil" | "plus" | "search" | "download" | "approval";
 
 interface IconProps {
   name: IconName;
@@ -22,6 +22,8 @@ export default function Icon(props: IconProps): JSX.Element {
       case "pencil": return <FaSolidPen size={size} class={cls} />;
       case "plus": return <FaRegularTrashCan size={size} class={cls} />;
       case "search": return <FaBrandsSearchengin size={size} class={cls} />;
+      case "download": return <FaSolidDownload size={size} class={cls} />;
+      case "approval": return <FaSolidCheck size={size} class={cls} />;
       
       default: return null;
     }

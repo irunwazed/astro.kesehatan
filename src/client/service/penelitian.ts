@@ -15,12 +15,21 @@ export const PenelitianService = {
     return await HTTPUpload('/api/penelitian-awal', formData)
   },
 
+  async createPenelitian(formData: FormData): Promise<ApiResponse<any>> {
+    return await HTTPUpload('/api/penelitian', formData)
+  },
+
+  async createPenelitianPerpanjang(formData: FormData): Promise<ApiResponse<any>> {
+    return await HTTPUpload('/api/penelitian-perpanjang', formData)
+  },
+
   getPenelitianUser: () => GET<Penelitian[]>({ url: "/api/penelitian" }),
+  getPenelitianById: (id:string) => GET<Penelitian|null>({ url: "/api/penelitian/data?id="+id }),
   getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
-  approvalPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, status }}),
+  approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),
 
   getPenelitianEtik: () => GET<Penelitian[]>({ url: "/api/penelitian/etik" }),
-  approvalEtikPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/etik/approval", body: { id, status }}),
+  approvalEtikPenelitian: (id:string, nomor:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/etik/approval", body: { id, nomor, status, alasan }}),
 
 
   // async createPenelitian(formData: FormData): Promise<ApiResponse<any>> {

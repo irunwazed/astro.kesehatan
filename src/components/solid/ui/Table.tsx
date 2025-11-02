@@ -10,7 +10,7 @@ type Column<T> = {
 
 interface Action<T> {
     label: string;
-    icon?: "delete" | "update" | "create" | "search";
+    icon?: "delete" | "update" | "create" | "search" | "approval";
     class?: string;
     onClick: (row: T) => void;
     hidden?: (row: T) => boolean;
@@ -144,7 +144,7 @@ export function Table<T>(props: TableProps<T>) {
                                                                 }
                                                             >
                                                                 <Show when={file.icon == "download"}>
-                                                                    <Icon name="plus" size={18} class={file.class} />
+                                                                    <Icon name="download" size={18} class={file.class} />
                                                                 </Show>
                                                                 {file.label}
                                                             </button>
@@ -185,6 +185,9 @@ export function Table<T>(props: TableProps<T>) {
                                                                 </Show>
                                                                 <Show when={action.icon == "search"}>
                                                                     <Icon name="search" size={18} class={action.class} />
+                                                                </Show>
+                                                                <Show when={action.icon == "approval"}>
+                                                                    <Icon name="approval" size={18} class={action.class} />
                                                                 </Show>
                                                                 {action.label}
                                                             </button>

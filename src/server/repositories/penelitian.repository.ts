@@ -1,18 +1,33 @@
 // import prisma from "../../helpers/lib/prisma";
 import { StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { supabase } from "../configs/db";
-import type { FormPermohonanPenelitian, InsertPenelitianAwal } from "../types/penelitian";
+import type { FormPermohonanPenelitian, InsertPenelitianAwal, InsertPenelitianPerpanjang } from "../types/penelitian";
 
 
 
 
 export class PenelitianRepository {
 
+  async getById(id: string): Promise<Penelitian | null> {
+    let { data: penelitian, error } = await supabase
+      .from('penelitian')
+      .select('*')
+      .eq("id", id)
+      .limit(1)
+
+    if (!penelitian || penelitian.length == 0) {
+      console.log("error ", error)
+      return null
+    }
+    return penelitian[0]
+  }
+
   async getByUser(user_id: string): Promise<Penelitian[]> {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
       .eq("user_id", user_id)
+      .order("updated_at", {ascending:false})
 
     if (!penelitian) {
       console.log("error ", error)
@@ -40,7 +55,7 @@ export class PenelitianRepository {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .eq("status", StatusPenelitian.PenelitianUpload)
+      .in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
 
     if (!penelitian) {
       console.log("error ", error)
@@ -70,34 +85,64 @@ export class PenelitianRepository {
     ])
   }
 
-  async approval(id: string, status: boolean) { // FormPermohonanPenelitian
+  async createPerpanjang(data: InsertPenelitianPerpanjang) { // FormPermohonanPenelitian
+
+    await supabase.from('penelitian').update(
+      {
+        status: StatusPenelitian.PermintaanPerpanjangan
+      }
+    ).eq("id", data.penelitian_id)
+
+
+    return await supabase.from('penelitian_perpanjang').insert([
+      {
+        penelitian_id: data.penelitian_id,
+        file_proposal_penelitian: data.file_proposal_penelitian,
+        file_Kaji_etik_penelitian: data.file_Kaji_etik_penelitian,
+        file_perpanjangan: data.file_perpanjangan,
+        bahasa: data.bahasa
+      }
+    ])
+  }
+
+  async approval(id: string, jenis:string, status: boolean, alasan:string) { // FormPermohonanPenelitian
     return await supabase.from('penelitian').update({
+      jenis: jenis,
+      alasan:alasan,
       status: status ? StatusPenelitian.TerimaPenelitian : StatusPenelitian.TolakPenelitian
     }).eq("id", id)
   }
 
-  async insertPenelitian(data: any) { // FormPermohonanPenelitian
-    // return await prisma.penelitian.create({
-    //   data: {
-    //     nama: data.nama,
-    //     // check_mahasiswa: data.check_mahasiswa,
-    //     biaya_penelitian: data.biaya_penelitian,
-    //     izin_etik: data.izin_etik,
-    //     surat_izin_penelitian: data.surat_izin_penelitian,
-    //     file_formulir_telaah_penelitian: data.file_formulir_telaah_penelitian,
-    //     file_formulir_ketersediaan_penelitian: data.file_formulir_ketersediaan_penelitian,
-    //     file_informasi_calon_subjek: data.file_informasi_calon_subjek,
-    //     file_pernyataan_konflik: data.file_pernyataan_konflik,
-    //     file_proposal_penelitian: data.file_proposal_penelitian,
-    //     file_surat_kaji_etik: data.file_surat_kaji_etik,
-    //     file_cv_peneliti: data.file_cv_peneliti,
-    //     file_cv_tim_peneliti: data.file_cv_tim_peneliti,
-    //     file_persetujuan: data.file_persetujuan,
-    //     file_kuesioner: data.file_kuesioner,
-    //     file_daftar_pustaka: data.file_daftar_pustaka,
-    //     file_bukti_transfer: data.file_bukti_transfer,
-    //   }
-    // });
+  async approvalEtik(id: string, nomor:string, status: boolean, alasan:string) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update({
+      nomor: nomor,
+      alasan: alasan,
+      status: status ? StatusPenelitian.PublishPenelitian : StatusPenelitian.TolakPenelitianEtik
+    }).eq("id", id)
+  }
+
+  async insertPenelitianBerkas(data: any) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update([
+      {
+        check_mahasiswa: data.check_mahasiswa,
+        biaya_penelitian: data.biaya_penelitian,
+        izin_etik: data.izin_etik,
+        surat_izin_penelitian: data.surat_izin_penelitian,
+        file_formulir_telaah_penelitian: data.file_formulir_telaah_penelitian,
+        file_formulir_ketersediaan_penelitian: data.file_formulir_ketersediaan_penelitian,
+        file_informasi_calon_subjek: data.file_informasi_calon_subjek,
+        file_pernyataan_konflik: data.file_pernyataan_konflik,
+        file_proposal_penelitian: data.file_proposal_penelitian,
+        file_surat_kaji_etik: data.file_surat_kaji_etik,
+        file_cv_peneliti: data.file_cv_peneliti,
+        file_cv_tim_peneliti: data.file_cv_tim_peneliti,
+        file_persetujuan: data.file_persetujuan,
+        file_kuesioner: data.file_kuesioner,
+        file_daftar_pustaka: data.file_daftar_pustaka,
+        file_bukti_transfer: data.file_bukti_transfer,
+        status: StatusPenelitian.PenelitianUpload
+      }
+    ]).eq("id", data.id)
   }
 
   async findAll() {

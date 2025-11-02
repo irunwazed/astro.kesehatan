@@ -8,16 +8,22 @@ export enum StatusPenelitian  {
     PenelitianUpload = 205,
     TerimaPenelitianEtik = 301,
     TolakPenelitianEtik = 302,
+    Expired = 401,
+    PermintaanPerpanjangan = 402,
+    PublishPenelitian = 501,
 }
 
 export const getStatusPenelitianNama = (status: number) => {
     if(status == 101) return "Draft"
     if(status == 102) return "Submit"
-    if(status == 201) return "TerimaPenelitian"
-    if(status == 202) return "TolakPenelitian"
-    if(status == 202) return "PenelitianUpload"
+    if(status == 201) return "Penelitian Diterima"
+    if(status == 202) return "Penelitian Ditolak"
+    if(status == 205) return "Penelitian Upload"
     if(status == 301) return "TerimaPenelitianEtik"
     if(status == 302) return "TolakPenelitianEtik"
+    if(status == 401) return "Expired"
+    if(status == 402) return "Permintaan Perpanjangan"
+    if(status == 501) return "Publish Penelitian"
     return ""
 }
 
@@ -54,8 +60,8 @@ export interface FormPermohonanAwalPenelitian {
 export interface FormPermohonanPenelitian {
     id: string;
     nama: string;
-    check_mahasiswa: string;
-    surat_izin_penelitian: string | File;
+    mahasiswa_proposal: string;
+    file_surat_izin_penelitian: string | File;
     file_formulir_telaah_penelitian: string | File;
     file_formulir_ketersediaan_penelitian: string | File;
     file_informasi_calon_subjek: string | File;
@@ -70,6 +76,14 @@ export interface FormPermohonanPenelitian {
     biaya_penelitian: number;
     file_bukti_transfer: string | File;
     izin_etik: string;
+}
+
+export interface FormPerpanjangPenelitian {
+    id: string;
+    file_proposal_penelitian: string | File;
+    file_Kaji_etik_penelitian: string | File;
+    file_perpanjangan: string | File;
+    bahasa: string;
 }
 
 export interface Penelitian {

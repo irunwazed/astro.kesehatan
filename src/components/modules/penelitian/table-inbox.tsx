@@ -1,16 +1,36 @@
+import { showAlert } from "@solid-ui/alertStore";
 import Button from "@solid-ui/Button";
+import FormLabel from "@solid-ui/FormLabel";
+import Input from "@solid-ui/Input";
+import Modal from "@solid-ui/Modal";
+import Select from "@solid-ui/Select";
 import { Table } from "@solid-ui/Table";
 import { createSignal, onMount } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
 import { getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 
+type FormPenelitian = {
+    id: string,
+    status: number
+    jenis: string
+    alasan: string
+}
 
 export default function PenelitianApprovalData() {
 
+    const dataForm: FormPenelitian = {
+        id: "",
+        jenis: "",
+        status: 0,
+        alasan: ""
+    }
 
     const [data, setData] = createSignal<Penelitian[]>([]);
     const [loading, setLoading] = createSignal(false);
+    const [open, setOpen] = createSignal(false)
+    const [loadingSave, setLoadingSave] = createSignal(false)
+    const [form, setForm] = createSignal(dataForm)
 
     const getData = async () => {
         setLoading(true);
@@ -32,9 +52,51 @@ export default function PenelitianApprovalData() {
     })
 
 
-    const setApproval = async (row:Penelitian, status:StatusPenelitian) => {
-        await PenelitianService.approvalPenelitian(row.id, status)
+    const setApproval = async (row:Penelitian) => {
+        setForm({...form(), id: row.id})
+        setOpen(true)
+    }
+
+    const valid = () => {
+    
+            if(form().status == 0){
+                showAlert({
+                    title: "Peringatan",
+                    message: "Pilih Status Approval"
+                })
+                return false
+            }
+    
+            if(form().id == ""){
+                showAlert({
+                    title: "Peringatan",
+                    message: "Pilih Penelitian"
+                })
+                return false
+            }
+    
+            if(form().jenis == ""){
+                showAlert({
+                    title: "Peringatan",
+                    message: "Masukkan Jenis"
+                })
+                return false
+            }
+            return true
+        }
+
+
+    const handleSave = async () => {
+
+        const check = valid()
+        if(!check) return
+
+
+        setLoadingSave(true)
+        const result = await PenelitianService.approvalPenelitian(form().id, form().jenis, form().status, form().alasan);
         getData()
+        setOpen(false)
+        setLoadingSave(false)
     }
 
     return <div class="p-4">
@@ -69,26 +131,80 @@ export default function PenelitianApprovalData() {
 
             actions={[
                 {
-                    label: "Terima",
-                    icon: "delete",
+                    label: "Approval",
+                    icon: "approval",
                     class: "bg-green-500 text-white hover:bg-green-600",
                     onClick: (row) => {
-                        setApproval(row, StatusPenelitian.TerimaPenelitian)
-                    },
-                    // disabled: (row) => row.status != "DRAFT"
-                    // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
-                },
-                {
-                    label: "Tolak",
-                    icon: "delete",
-                    class: "bg-red-500 text-white hover:bg-red-600",
-                    onClick: (row) => {
-                        setApproval(row, StatusPenelitian.TolakPenelitian)
+                        setApproval(row)
                     },
                     // disabled: (row) => row.status != "DRAFT"
                     // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
                 },
             ]}
         />
+
+         <Modal
+                    open={open()}
+                    loading={loadingSave()}
+                    title="Tambah Data"
+                    onClose={() => !loadingSave() && setOpen(false)}
+                >
+        
+                    <div class="flex flex-col gap-4 mt-4">
+        
+
+                        <div>
+                            <FormLabel for="jenis" text="Jenis" />
+                            <Select options={[
+                                { label: "Pilih Jenis", value: "" },
+                                { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
+                                { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
+                                { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
+                                { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
+                                { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
+                                { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
+                            ]}
+                             onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
+         
+                        </div>
+        
+                        <div>
+                            <FormLabel for="status" text="Status" />
+                            <Select options={[
+                                { label: "Pilih Status", value: "0" },
+                                { label: "Tolak", value: StatusPenelitian.TolakPenelitian.toString() },
+                                { label: "Terima", value: StatusPenelitian.TerimaPenelitian.toString() }
+                            ]}
+                             onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value) })} />
+         
+                        </div>
+                        <div>
+                            <FormLabel for="alasan" text="Alasan" />
+                            <Input
+                                id="alasan"
+                                value={form()?.alasan}
+                                onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                            />
+                        </div>
+        
+                        <hr class="my-2 border-gray-200" />
+                        <div class="flex justify-end gap-2">
+                            <button
+                                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                                onClick={() => setOpen(false)}
+                                disabled={loadingSave()}
+                            >
+                                Batal
+                            </button>
+                            <button
+                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                onClick={handleSave}
+                                disabled={loadingSave()}
+                            >
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
     </div>;
 }
