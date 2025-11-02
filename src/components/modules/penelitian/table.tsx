@@ -245,8 +245,8 @@ export default function PenelitianData() {
                     onClick: (row) => {
                         route.push("/app/penelitian/form1?id=" + row.id)
                     },
-                    hidden: (row) => row.status > StatusPenelitian.TerimaPenelitian,     // ❌ user id=2 tombol delete disembunyikan
-                    disabled: (row) => row.status != StatusPenelitian.TerimaPenelitian,    
+                    hidden: (row) => row.status <= StatusPenelitian.Submit, 
+                    disabled: (row) => (row.status != StatusPenelitian.TerimaPenelitian),    
                 },
                 {
                     label: "Perpanjang Penelitian",

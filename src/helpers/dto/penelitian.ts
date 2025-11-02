@@ -17,10 +17,10 @@ export const getStatusPenelitianNama = (status: number) => {
     if (status == 101) return "Draft"
     if (status == 102) return "Submit"
     if (status == 201) return "Penelitian Diterima"
-    if (status == 202) return "Penelitian Ditolak"
+    if (status == 202) return "Informasi Kurang"
     if (status == 205) return "Penelitian Upload"
     if (status == 301) return "TerimaPenelitianEtik"
-    if (status == 302) return "TolakPenelitianEtik"
+    if (status == 302) return "Revisi"
     if (status == 401) return "Expired"
     if (status == 402) return "Permintaan Perpanjangan"
     if (status == 501) return "Publish Penelitian"
@@ -31,10 +31,10 @@ export const getStatusPenelitianData = (status: number) => {
     if (status == 101) return { name: "Draft", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 102) return { name: "Submit", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 201) return { name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 202) return { name: "Penelitian Ditolak", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 202) return { name: "Informasi Kurang", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 205) return { name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 301) return { name: "TerimaPenelitianEtik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 302) return { name: "TolakPenelitianEtik", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 302) return { name: "Revisi", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 401) return { name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 402) return { name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 501) return { name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
