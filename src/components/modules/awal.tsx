@@ -3,7 +3,7 @@ import FormLabel from "@solid-ui/FormLabel";
 import Input from "@solid-ui/Input";
 import Button from "@solid-ui/Button";
 import { showAlert } from "@solid-ui/alertStore";
-import type { FormPermohonanAwalPenelitian, GroupResponse } from "src/helpers/dto/penelitian";
+import { StatusPenelitian, type FormPermohonanAwalPenelitian, type GroupResponse, type Penelitian } from "src/helpers/dto/penelitian";
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
 import Select from "@solid-ui/Select";
@@ -24,7 +24,8 @@ export default function FormPenelitianAwal() {
         file_permohonan_instansi: "",
         jumlah_minimal_sampel: 0
     }
-    const [data, setData] = createSignal<GroupResponse[]>([]);
+    const [id, setId] = createSignal("");
+    const [data, setData] = createSignal<Penelitian | null>(null);
     const [loading, setLoading] = createSignal(false);
     const [loadingSave, setLoadingSave] = createSignal(false);
     const [open, setOpen] = createSignal(false);
@@ -44,127 +45,41 @@ export default function FormPenelitianAwal() {
     // }
 
     onMount(async () => {
-        // getData()
-
-        // showAlert({
-        //     title: "Validasi Error",
-        //     message: "sdfsf",
-        //     icon: "error"
-        // });
+        if (typeof window !== "undefined") {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get("id");
+            setId(id ?? "");
+            setTimeout(() => {
+                getData()
+            }, 1000)
+        }
     });
 
-    // const getData = async () => {
-    //     setLoading(true);
-    //     const data = await GroupService.getGroup()
-    //     if (data.data) {
-    //         // const result = data.data.map((val, idx) => {
-    //         //     let mulai = formatSqlDatetime(val.tgl_mulai)
-    //         //     val.tgl_mulai = `${mulai.date} (${mulai.time})`
-    //         //     let akhir = formatSqlDatetime(val.tgl_akhir)
-    //         //     val.tgl_akhir = `${akhir.date} (${akhir.time})`
-    //         // })
 
-    //         data.data.map((dt) => {
-    //             if (dt.status == "ROLLBACK") {
-    //                 dt.status_name = "Selesai Ujian"
-    //             } else if (dt.status == "COMMIT") {
-    //                 dt.status_name = "Sedang Ujuin"
-    //             } else {
-    //                 dt.status_name = dt.status
-    //             }
-    //         })
-    //         setData(data.data);
-    //     }
-    //     setLoading(false);
-    // }
-
-    const setCreate = () => {
-        setOpen(true)
-        setIsUpdate(false)
+    const getData = async () => {
+        setLoading(true);
+        const data = await PenelitianService.getPenelitianById(id())
+        if (data.data) {
+            setData(data.data);
+            setForm({
+                ...form(),
+                nama: data.data.nama,
+                deskripsi: data.data.deskripsi,
+                tujuan: data.data.tujuan,
+                variabel_lain: data.data.variabel_lain,
+                pendanaan: parseInt(data.data.pendanaan),
+                sponsor: data.data.sponsor,
+                waktu_awal_sample: parseInt(data.data.waktu_awal_sample),
+                waktu_akhir_sample: parseInt(data.data.waktu_akhir_sample),
+                jumlah_minimal_sampel: data.data.jumlah_minimal_sampel
+            })
+            if (data.data.status == StatusPenelitian.TolakPenelitian || data.data.status == StatusPenelitian.Submit) {
+                setIsUpdate(true)
+            }
+        }
+        setLoading(false);
     }
 
-    // const setUpdate = (u: GroupResponse) => {
-    //     setIsUpdate(true)
-    //     setOpen(true)
-    //     // setForm({
-    //     //     id: u.id,
-    //     //     nama: u.nama,
-    //     //     jenis: u.jenis,
-    //     //     tgl_mulai: u.tgl_mulai,
-    //     //     tgl_akhir: u.tgl_akhir,
-    //     //     username: u.username,
-    //     // })
-    // }
-
-    // const setSearch = (u: GroupResponse) => { window.location.href = `/pengguna/${u.id}` }
-
-    // const shwoOTP = (u: GroupResponse) => { window.location.href = `/otp/${u.id}` }
-
-    // const createData = async (u: FormGroup) => {
-    //     await GroupService.createGroup(form())
-    //     getData()
-    // }
-    // const updateData = async (u: FormGroup) => {
-    //     await GroupService.updateGroup(form())
-    //     getData()
-    // }
-
-
-
-    // async function mfaCommit(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Ubah PIN Peserta",
-    //         message: "Apakah anda yakin ingin mengubah pin peserta ini untuk mengikuti ujian?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await MFAService.setMFAGroup({ group_id: u.id })
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
-
-
-    // async function mfaRollback(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Mengembalikan PIN Peserta",
-    //         message: "Apakah anda yakin ingin mengembalikan pin peserta ini karena selesai ujian?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await MFAService.setRollbackMFAGroup({ group_id: u.id })
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
-
-    // async function deleteData(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Hapus Data?",
-    //         message: "Apakah anda yakin ingin menghapus data ini?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await GroupService.deleteGroup(u.id)
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
 
     // Add this validation helper function at the top of your file
     const validateForm = (form: FormPermohonanAwalPenelitian): { isValid: boolean; errors: string[] } => {
@@ -196,19 +111,24 @@ export default function FormPenelitianAwal() {
     const handleSave = async () => {
         setLoadingSave(true);
         try {
-            // Validate form
-            const { isValid, errors } = validateForm(form());
-
-            if (!isValid) {
-                showAlert({
-                    title: "Validasi Error",
-                    message: errors.join('\n'),
-                    icon: "error"
-                });
-                return;
+            if (!isUpdate()) {
+                // Validate form
+                const { isValid, errors } = validateForm(form());
+                if (!isValid) {
+                    showAlert({
+                        title: "Validasi Error",
+                        message: errors.join('\n'),
+                        icon: "error"
+                    });
+                    return;
+                }
             }
 
             const formData = new FormData();
+
+            if (data()?.id) {
+                formData.append('id', data().id);
+            }
 
             // Add text fields
             formData.append('nama', form().nama);
@@ -229,12 +149,12 @@ export default function FormPenelitianAwal() {
 
             // Validate file sizes
             const maxFileSize = 5 * 1024 * 1024; // 5MB
+            let error2: string[] = []
             formData.forEach((value, key) => {
                 if (value instanceof File && value.size > maxFileSize) {
-
                     showAlert({
                         title: "Validasi Error",
-                        message: errors.join('\n'),
+                        message: error2.join('\n'),
                         icon: "error"
                     });
                     return;
@@ -243,11 +163,7 @@ export default function FormPenelitianAwal() {
             });
 
             // Send to API
-            if (isUpdate()) {
-                // await PenelitianService.updatePenelitian(form().id, formData);
-            } else {
-                await PenelitianService.createPenelitianAwal(formData);
-            }
+            await PenelitianService.createPenelitianAwal(formData);
 
             // Show success message
             showAlert({
@@ -384,22 +300,32 @@ export default function FormPenelitianAwal() {
                     {/* File Uploads */}
                     <div>
                         <FormLabel for="file_draft_penelitian" text="Draft Proposal Penelitian" />
-                        <Input
-                            id="file_draft_penelitian"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_draft_penelitian: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_draft_penelitian"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_draft_penelitian: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_draft_penelitian) === "string" && data()?.file_draft_penelitian != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_draft_penelitian)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_permohonan_instansi" text="Surat Permohonan dari Instansi" />
-                        <Input
-                            id="file_permohonan_instansi"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_permohonan_instansi: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_permohonan_instansi"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_permohonan_instansi: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_permohonan_instansi) === "string" && data()?.file_permohonan_instansi != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_permohonan_instansi)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
 

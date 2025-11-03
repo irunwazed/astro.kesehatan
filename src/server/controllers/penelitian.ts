@@ -10,92 +10,101 @@ import { StatusPenelitian } from "src/helpers/dto/penelitian";
 const repository = new PenelitianRepository();
 const userRepository = new UserRepository();
 
+
 const processFormDataPenelitian = async (formData: FormData) => {
 
 
 
   const data: FormPermohonanPenelitian = {
     id: formData.get('id') as string,
-    nama: formData.get('nama') as string,
     mahasiswa_proposal: formData.get('check_mahasiswa') as string,
     biaya_penelitian: parseInt(formData.get('biaya_penelitian') as string),
     izin_etik: (formData.get('izin_etik') as string),
-    file_surat_izin_penelitian: "",
-    file_formulir_telaah_penelitian: "",
-    file_formulir_ketersediaan_penelitian: "",
-    file_informasi_calon_subjek: "",
-    file_pernyataan_konflik: "",
-    file_proposal_penelitian: "",
-    file_surat_kaji_etik: "",
-    file_cv_peneliti: "",
-    file_cv_tim_peneliti: "",
-    file_persetujuan: "",
-    file_kuesioner: "",
-    file_daftar_pustaka: "",
-    file_bukti_transfer: "",
   };
 
+  if (formData.get("file_surat_izin_penelitian")) {
+    const file_surat_izin_penelitian = formData.get("file_surat_izin_penelitian") as File;
+    const file_surat_izin_penelitian_path = await uploadFilePermohonan("file_surat_izin_penelitian" + "_" + uuidv7() + ".pdf", file_surat_izin_penelitian);
+    data.file_surat_izin_penelitian = file_surat_izin_penelitian_path ?? ""
+  }
 
-  const file_surat_izin_penelitian = formData.get("file_surat_izin_penelitian") as File;
-  const file_surat_izin_penelitian_path = await uploadFilePermohonan("file_surat_izin_penelitian" + "_" + uuidv7() + ".pdf", file_surat_izin_penelitian);
-  data.file_surat_izin_penelitian = file_surat_izin_penelitian_path ?? ""
+  if (formData.get("file_formulir_telaah_penelitian")) {
+    const file_formulir_telaah_penelitian = formData.get("file_formulir_telaah_penelitian") as File;
+    const file_formulir_telaah_penelitian_path = await uploadFilePermohonan("file_formulir_telaah_penelitian" + "_" + uuidv7() + ".pdf", file_formulir_telaah_penelitian);
+    data.file_formulir_telaah_penelitian = file_formulir_telaah_penelitian_path ?? ""
+  }
 
 
-  const file_formulir_telaah_penelitian = formData.get("file_formulir_telaah_penelitian") as File;
-  const file_formulir_telaah_penelitian_path = await uploadFilePermohonan("file_formulir_telaah_penelitian" + "_" + uuidv7() + ".pdf", file_formulir_telaah_penelitian);
-  data.file_formulir_telaah_penelitian = file_formulir_telaah_penelitian_path ?? ""
+  if (formData.get("file_informasi_calon_subjek")) {
+    const file_informasi_calon_subjek = formData.get("file_informasi_calon_subjek") as File;
+    const file_informasi_calon_subjek_path = await uploadFilePermohonan("file_informasi_calon_subjek" + "_" + uuidv7() + ".pdf", file_informasi_calon_subjek);
+    data.file_informasi_calon_subjek = file_informasi_calon_subjek_path ?? ""
+  }
 
-  const file_formulir_ketersediaan_penelitian = formData.get("file_formulir_ketersediaan_penelitian") as File;
-  const file_formulir_ketersediaan_penelitian_path = await uploadFilePermohonan("file_formulir_ketersediaan_penelitian" + "_" + uuidv7() + ".pdf", file_formulir_ketersediaan_penelitian);
-  data.file_formulir_ketersediaan_penelitian = file_formulir_ketersediaan_penelitian_path ?? ""
+  if (formData.get("file_pernyataan_konflik")) {
+    const file_pernyataan_konflik = formData.get("file_pernyataan_konflik") as File;
+    const file_pernyataan_konflik_path = await uploadFilePermohonan("file_pernyataan_konflik" + "_" + uuidv7() + ".pdf", file_pernyataan_konflik);
+    data.file_pernyataan_konflik = file_pernyataan_konflik_path ?? ""
+  }
 
-  const file_informasi_calon_subjek = formData.get("file_informasi_calon_subjek") as File;
-  const file_informasi_calon_subjek_path = await uploadFilePermohonan("file_informasi_calon_subjek" + "_" + uuidv7() + ".pdf", file_informasi_calon_subjek);
-  data.file_informasi_calon_subjek = file_informasi_calon_subjek_path ?? ""
+  if (formData.get("file_proposal_penelitian")) {
+    const file_proposal_penelitian = formData.get("file_proposal_penelitian") as File;
+    const file_proposal_penelitian_path = await uploadFilePermohonan("file_proposal_penelitian" + "_" + uuidv7() + ".pdf", file_proposal_penelitian);
+    data.file_proposal_penelitian = file_proposal_penelitian_path ?? ""
+  }
 
-  const file_pernyataan_konflik = formData.get("file_pernyataan_konflik") as File;
-  const file_pernyataan_konflik_path = await uploadFilePermohonan("file_pernyataan_konflik" + "_" + uuidv7() + ".pdf", file_pernyataan_konflik);
-  data.file_pernyataan_konflik = file_pernyataan_konflik_path ?? ""
+  if (formData.get("file_surat_kaji_etik")) {
+    const file_surat_kaji_etik = formData.get("file_surat_kaji_etik") as File;
+    const file_surat_kaji_etik_path = await uploadFilePermohonan("file_surat_kaji_etik" + "_" + uuidv7() + ".pdf", file_surat_kaji_etik);
+    data.file_surat_kaji_etik = file_surat_kaji_etik_path ?? ""
+  }
 
-  const file_proposal_penelitian = formData.get("file_proposal_penelitian") as File;
-  const file_proposal_penelitian_path = await uploadFilePermohonan("file_proposal_penelitian" + "_" + uuidv7() + ".pdf", file_proposal_penelitian);
-  data.file_proposal_penelitian = file_proposal_penelitian_path ?? ""
+  if (formData.get("file_cv_peneliti")) {
+    const file_cv_peneliti = formData.get("file_cv_peneliti") as File;
+    const file_cv_peneliti_path = await uploadFilePermohonan("file_cv_peneliti" + "_" + uuidv7() + ".pdf", file_cv_peneliti);
+    data.file_cv_peneliti = file_cv_peneliti_path ?? ""
+  }
 
-  const file_surat_kaji_etik = formData.get("file_surat_kaji_etik") as File;
-  const file_surat_kaji_etik_path = await uploadFilePermohonan("file_surat_kaji_etik" + "_" + uuidv7() + ".pdf", file_surat_kaji_etik);
-  data.file_surat_kaji_etik = file_surat_kaji_etik_path ?? ""
+  if (formData.get("file_cv_tim_peneliti")) {
+    const file_cv_tim_peneliti = formData.get("file_cv_tim_peneliti") as File;
+    const file_cv_tim_peneliti_path = await uploadFilePermohonan("file_cv_tim_peneliti" + "_" + uuidv7() + ".pdf", file_cv_tim_peneliti);
+    data.file_cv_tim_peneliti = file_cv_tim_peneliti_path ?? ""
+  }
 
-  const file_cv_peneliti = formData.get("file_cv_peneliti") as File;
-  const file_cv_peneliti_path = await uploadFilePermohonan("file_cv_peneliti" + "_" + uuidv7() + ".pdf", file_cv_peneliti);
-  data.file_cv_peneliti = file_cv_peneliti_path ?? ""
+  if (formData.get("file_persetujuan")) {
+    const file_persetujuan = formData.get("file_persetujuan") as File;
+    const file_persetujuan_path = await uploadFilePermohonan("file_persetujuan" + "_" + uuidv7() + ".pdf", file_persetujuan);
+    data.file_persetujuan = file_persetujuan_path ?? ""
+  }
 
-  const file_cv_tim_peneliti = formData.get("file_cv_tim_peneliti") as File;
-  const file_cv_tim_peneliti_path = await uploadFilePermohonan("file_cv_tim_peneliti" + "_" + uuidv7() + ".pdf", file_cv_tim_peneliti);
-  data.file_cv_tim_peneliti = file_cv_tim_peneliti_path ?? ""
+  if (formData.get("file_kuesioner")) {
+    const file_kuesioner = formData.get("file_kuesioner") as File;
+    const file_kuesioner_path = await uploadFilePermohonan("file_kuesioner" + "_" + uuidv7() + ".pdf", file_kuesioner);
+    data.file_kuesioner = file_kuesioner_path ?? ""
+  }
 
-  const file_persetujuan = formData.get("file_persetujuan") as File;
-  const file_persetujuan_path = await uploadFilePermohonan("file_persetujuan" + "_" + uuidv7() + ".pdf", file_persetujuan);
-  data.file_persetujuan = file_persetujuan_path ?? ""
+  if (formData.get("file_daftar_pustaka")) {
+    const file_daftar_pustaka = formData.get("file_daftar_pustaka") as File;
+    const file_daftar_pustaka_path = await uploadFilePermohonan("file_daftar_pustaka" + "_" + uuidv7() + ".pdf", file_daftar_pustaka);
+    data.file_daftar_pustaka = file_daftar_pustaka_path ?? ""
+  }
 
-  const file_kuesioner = formData.get("file_kuesioner") as File;
-  const file_kuesioner_path = await uploadFilePermohonan("file_kuesioner" + "_" + uuidv7() + ".pdf", file_kuesioner);
-  data.file_kuesioner = file_kuesioner_path ?? ""
-
-  const file_daftar_pustaka = formData.get("file_daftar_pustaka") as File;
-  const file_daftar_pustaka_path = await uploadFilePermohonan("file_daftar_pustaka" + "_" + uuidv7() + ".pdf", file_daftar_pustaka);
-  data.file_daftar_pustaka = file_daftar_pustaka_path ?? ""
-
-  const file_bukti_transfer = formData.get("file_bukti_transfer") as File;
-  const file_bukti_transfer_path = await uploadFilePermohonan("file_bukti_transfer" + "_" + uuidv7() + ".pdf", file_bukti_transfer);
-  data.file_bukti_transfer = file_bukti_transfer_path ?? ""
-
-  // const data: Record<string, any> = {};
+  if (formData.get("file_bukti_transfer")) {
+    const file_bukti_transfer = formData.get("file_bukti_transfer") as File;
+    const file_bukti_transfer_path = await uploadFilePermohonan("file_bukti_transfer" + "_" + uuidv7() + ".pdf", file_bukti_transfer);
+    data.file_bukti_transfer = file_bukti_transfer_path ?? ""
+  }
 
   return data;
 }
 
 
-const processFormDataPenelitianAwal = async (user_id: string, formData: FormData): Promise<InsertPenelitianAwal> => {
+const processFormDataPenelitianAwal = async (user_id: string, formData: FormData): Promise<{
+  data: InsertPenelitianAwal,
+  id: string | null,
+}> => {
+
+  const id: string = formData.get('id') == null ? "" : formData.get('id') as string
 
   const data: InsertPenelitianAwal = {
     nama: formData.get('nama') as string,
@@ -108,20 +117,24 @@ const processFormDataPenelitianAwal = async (user_id: string, formData: FormData
     user_id: user_id,
     waktu_awal_sample: parseInt(formData.get('waktu_awal_sample') as string),
     waktu_akhir_sample: parseInt(formData.get('waktu_akhir_sample') as string),
-    file_draft_penelitian: "",
-    file_permohonan_instansi: "",
   };
 
-  const file_draft_penelitian = formData.get("file_draft_penelitian") as File;
-  const file_draft_penelitian_path = await uploadFilePermohonan("file_draft_penelitian" + "_" + uuidv7() + ".pdf", file_draft_penelitian);
-  data.file_draft_penelitian = file_draft_penelitian_path ?? ""
+  if (formData.get("file_draft_penelitian")) {
+    const file_draft_penelitian = formData.get("file_draft_penelitian") as File;
+    const file_draft_penelitian_path = await uploadFilePermohonan("file_draft_penelitian" + "_" + uuidv7() + ".pdf", file_draft_penelitian);
+    data.file_draft_penelitian = file_draft_penelitian_path ?? ""
+  }
 
+  if (formData.get("file_permohonan_instansi")) {
+    const file_permohonan_instansi = formData.get("file_permohonan_instansi") as File;
+    const file_permohonan_instansi_path = await uploadFilePermohonan("file_permohonan_instansi" + "_" + uuidv7() + ".pdf", file_permohonan_instansi);
+    data.file_permohonan_instansi = file_permohonan_instansi_path ?? ""
+  }
 
-  const file_permohonan_instansi = formData.get("file_permohonan_instansi") as File;
-  const file_permohonan_instansi_path = await uploadFilePermohonan("file_permohonan_instansi" + "_" + uuidv7() + ".pdf", file_permohonan_instansi);
-  data.file_permohonan_instansi = file_permohonan_instansi_path ?? ""
-
-  return data;
+  return {
+    data: data,
+    id: id
+  };
 }
 
 
@@ -286,10 +299,15 @@ export class PenelitianController {
         );
       }
 
+      const { data, id } = await processFormDataPenelitianAwal(auth.id, formData);
+      console.log("id", id)
 
-      const data: InsertPenelitianAwal = await processFormDataPenelitianAwal(auth.id, formData);
-
-      const result = await repository.create(data);
+      let result:any
+      if (id == "") {
+        result = await repository.create(data);
+      } else {
+        result = await repository.update(id, data);
+      }
 
       if (result.error) {
         return new Response(JSON.stringify({
@@ -430,7 +448,7 @@ export class PenelitianController {
       } = {
         id: formData.get('id') as string,
         nomor: formData.get('nomor') as string,
-        status: parseInt(formData.get('nomor') as string),
+        status: parseInt(formData.get('status') as string),
         alasan: formData.get('alasan') as string,
         file_etik: "",
       }
@@ -438,8 +456,8 @@ export class PenelitianController {
       const file_etik = formData.get("file_etik") as File;
       const file_etik_path = await uploadFilePermohonan("file_etik" + "_" + uuidv7() + ".pdf", file_etik);
       data.file_etik = file_etik_path ?? ""
-
-      const result = await repository.approvalEtik(data.id, data.nomor, (data.status as number == StatusPenelitian.TerimaPenelitianEtik || data.status as number == StatusPenelitian.PublishPenelitian), data.alasan, data.file_etik);
+      console.log("data", data)
+      const result = await repository.approvalEtik(data.id, data.nomor, (data.status == StatusPenelitian.TerimaPenelitianEtik || data.status == StatusPenelitian.PublishPenelitian), data.alasan, data.file_etik);
 
       return new Response(JSON.stringify({
         status: true,

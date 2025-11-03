@@ -1,19 +1,20 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import FormLabel from "@solid-ui/FormLabel";
 import Input from "@solid-ui/Input";
 import Button from "@solid-ui/Button";
 import { showAlert } from "@solid-ui/alertStore";
-import type { FormPermohonanPenelitian, GroupResponse, Penelitian } from "src/helpers/dto/penelitian";
+import { StatusPenelitian, type FormPermohonanPenelitian, type GroupResponse, type Penelitian } from "src/helpers/dto/penelitian";
 import { GroupService } from "src/client/service/group";
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
+import Select from "@solid-ui/Select";
 
 export default function Form1Data() {
 
     const formDefault: FormPermohonanPenelitian = {
         id: "",
         nama: "",
-        mahasiswa_proposal: "",
+        check_mahasiswa: "",
         file_surat_izin_penelitian: "",
         file_formulir_telaah_penelitian: "",
         file_formulir_ketersediaan_penelitian: "",
@@ -26,39 +27,24 @@ export default function Form1Data() {
         file_persetujuan: "",
         file_kuesioner: "",
         file_daftar_pustaka: "",
-        biaya_penelitian: 0,
         file_bukti_transfer: "",
+        biaya_penelitian: 0,
         izin_etik: "",
     }
 
     const [id, setId] = createSignal("");
-    const [data, setData] = createSignal<Penelitian|null>(null);
+    const [data, setData] = createSignal<Penelitian | null>(null);
     const [loading, setLoading] = createSignal(false);
     const [loadingSave, setLoadingSave] = createSignal(false);
     const [open, setOpen] = createSignal(false);
     const [isUpdate, setIsUpdate] = createSignal(false)
-    const [form, setForm] = createSignal<FormPermohonanPenelitian | any>(formDefault)
-
-    // const handleSave = async () => {
-    //     setLoadingSave(true);
-    //     // if (isUpdate()) {
-    //     //     await updateData(form())
-    //     // } else {
-    //     //     await createData(form())
-    //     // }
-    //     setLoadingSave(false);
-    //     setOpen(false)
-    //     getData()
-    // }
+    const [form, setForm] = createSignal<FormPermohonanPenelitian>(formDefault)
+    const [mahasiswa, setMahasiswa] = createSignal(true)
 
     onMount(async () => {
-        // getData()
-
         if (typeof window !== "undefined") {
-
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get("id");
-            console.log("id", id)
             setId(id ?? "");
             setTimeout(() => {
                 getData()
@@ -69,100 +55,20 @@ export default function Form1Data() {
     const getData = async () => {
         setLoading(true);
         const data = await PenelitianService.getPenelitianById(id())
-        console.log("data", data)
         if (data.data) {
             setData(data.data);
+            setForm({
+                ...form(),
+                check_mahasiswa: data.data.check_mahasiswa,
+                biaya_penelitian: data.data.biaya_penelitian,
+                izin_etik: data.data.izin_etik
+            })
+            if(data.data.status == StatusPenelitian.TolakPenelitianEtik){
+                setIsUpdate(true)
+            }
         }
         setLoading(false);
     }
-
-    const setCreate = () => {
-        setOpen(true)
-        setIsUpdate(false)
-    }
-
-    const setUpdate = (u: GroupResponse) => {
-        setIsUpdate(true)
-        setOpen(true)
-        // setForm({
-        //     id: u.id,
-        //     nama: u.nama,
-        //     jenis: u.jenis,
-        //     tgl_mulai: u.tgl_mulai,
-        //     tgl_akhir: u.tgl_akhir,
-        //     username: u.username,
-        // })
-    }
-
-    const setSearch = (u: GroupResponse) => { window.location.href = `/pengguna/${u.id}` }
-
-    const shwoOTP = (u: GroupResponse) => { window.location.href = `/otp/${u.id}` }
-
-    // const createData = async (u: FormGroup) => {
-    //     await GroupService.createGroup(form())
-    //     getData()
-    // }
-    // const updateData = async (u: FormGroup) => {
-    //     await GroupService.updateGroup(form())
-    //     getData()
-    // }
-
-
-
-    // async function mfaCommit(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Ubah PIN Peserta",
-    //         message: "Apakah anda yakin ingin mengubah pin peserta ini untuk mengikuti ujian?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await MFAService.setMFAGroup({ group_id: u.id })
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
-
-
-    // async function mfaRollback(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Mengembalikan PIN Peserta",
-    //         message: "Apakah anda yakin ingin mengembalikan pin peserta ini karena selesai ujian?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await MFAService.setRollbackMFAGroup({ group_id: u.id })
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
-
-    // async function deleteData(u: FormGroup) {
-    //     const confirmed = await showAlert({
-    //         title: "Hapus Data?",
-    //         message: "Apakah anda yakin ingin menghapus data ini?",
-    //         icon: "warning",
-    //         showCancel: true,
-    //         confirmText: "Ya",
-    //         cancelText: "Tidak",
-    //     });
-
-    //     if (confirmed) {
-    //         await GroupService.deleteGroup(u.id)
-    //         getData()
-    //     } else {
-    //         console.log("Batal");
-    //     }
-    // }
 
     // Add this validation helper function at the top of your file
     const validateForm = (form: FormPermohonanPenelitian | any): { isValid: boolean; errors: string[] } => {
@@ -170,13 +76,14 @@ export default function Form1Data() {
 
         // Required text fields
         // if (!form.nama.trim()) errors.push("Nama Peneliti wajib diisi");
-        if (!form.check_mahasiswa.trim()) errors.push("Status Mahasiswa wajib diisi");
+        // console.log("form", form)
+        if (!form.check_mahasiswa) errors.push("Status Mahasiswa wajib diisi");
         if (!form.biaya_penelitian) errors.push("Biaya Penelitian wajib diisi");
-        if (!form.izin_etik.trim()) errors.push("Izin Etik wajib diisi");
+        if (!form.izin_etik) errors.push("Izin Etik wajib diisi");
 
         // Required file fields
         const requiredFiles = [
-            { field: 'surat_izin_penelitian', label: 'Surat Izin Penelitian' },
+            { field: 'file_surat_izin_penelitian', label: 'Surat Izin Penelitian' },
             { field: 'file_formulir_telaah_penelitian', label: 'Formulir Telaah Penelitian' },
             { field: 'file_formulir_ketersediaan_penelitian', label: 'Formulir Ketersediaan Penelitian' },
             { field: 'file_proposal_penelitian', label: 'Proposal Penelitian' },
@@ -201,15 +108,16 @@ export default function Form1Data() {
         setLoadingSave(true);
         try {
             // Validate form
-            const { isValid, errors } = validateForm(form());
-
-            if (!isValid) {
-                showAlert({
-                    title: "Validasi Error",
-                    message: errors.join('\n'),
-                    icon: "error"
-                });
-                return;
+            if(!isUpdate()){
+                const { isValid, errors } = validateForm(form());
+                if (!isValid) {
+                    showAlert({
+                        title: "Validasi Error",
+                        message: errors.join('\n'),
+                        icon: "error"
+                    });
+                    return;
+                }
             }
 
             const formData = new FormData();
@@ -223,7 +131,7 @@ export default function Form1Data() {
 
             // Add file fields
             const fileFields = [
-                'surat_izin_penelitian',
+                'file_surat_izin_penelitian',
                 'file_formulir_telaah_penelitian',
                 'file_formulir_ketersediaan_penelitian',
                 'file_informasi_calon_subjek',
@@ -247,25 +155,25 @@ export default function Form1Data() {
 
             // Validate file sizes
             const maxFileSize = 5 * 1024 * 1024; // 5MB
+            let error2:string[] = []
             formData.forEach((value, key) => {
                 if (value instanceof File && value.size > maxFileSize) {
-
                     showAlert({
                         title: "Validasi Error",
-                        message: errors.join('\n'),
+                        message: error2.join('\n'),
                         icon: "error"
                     });
                     return;
-                    // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
                 }
             });
 
             // Send to API
-            if (isUpdate()) {
-                // await PenelitianService.updatePenelitian(form().id, formData);
-            } else {
-                await PenelitianService.createPenelitian(formData);
-            }
+
+            await PenelitianService.createPenelitian(formData);
+            // if (isUpdate()) {
+            //     // await PenelitianService.updatePenelitian(form().id, formData);
+            // } else {
+            // }
 
             // Show success message
             showAlert({
@@ -297,10 +205,8 @@ export default function Form1Data() {
 
     return (
         <div class="p-6">
-
             <div class="bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-6">Form Permohonan Penelitian</h2>
-
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
@@ -308,16 +214,34 @@ export default function Form1Data() {
                         <Input
                             id="nama"
                             value={data()?.nama}
+                            disabled={true}
                         />
                     </div>
-
                     <div>
-                        <FormLabel for="check_mahasiswa" text="Status Mahasiswa" />
-                        <Input
-                            id="check_mahasiswa"
-                            value={form().check_mahasiswa}
-                            onInput={(e) => setForm({ ...form(), check_mahasiswa: e.currentTarget.value })}
-                        />
+                        <FormLabel for="check_mahasiswa" text="Apakah anda Mahasiswa dan sudah mengikuti Ujian Proposal?" />
+                        <div class="flex gap-2 ">
+                            <Select id="check_mahasiswa" options={[
+                                { label: "Pilih Status", value: "" },
+                                { label: "Ya", value: "YA" },
+                                { label: "Tidak", value: "TIDAK" },
+                                { label: "Lainnya", value: "LAINNYA" }
+                            ]}
+                                onInput={(e) => {
+                                    setForm({ ...form(), check_mahasiswa: (e.currentTarget.value) })
+                                    if (e.currentTarget.value == "LAINNYA") {
+                                        setMahasiswa(false)
+                                    } else {
+                                        setMahasiswa(true)
+                                    }
+                                }} />
+                            <Show when={!mahasiswa()}>
+                                <Input
+                                    id="check_mahasiswa"
+                                    placeholder="Masukkan opsi lain"
+                                    onInput={(e) => setForm({ ...form(), check_mahasiswa: e.currentTarget.value })}
+                                />
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
@@ -332,133 +256,199 @@ export default function Form1Data() {
 
                     {/* File Uploads */}
                     <div>
-                        <FormLabel for="surat_izin_penelitian" text="Surat Izin Penelitian" />
-                        <Input
-                            id="surat_izin_penelitian"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), surat_izin_penelitian: e.currentTarget.files?.[0] as File })}
-                        />
+                        <FormLabel for="file_surat_izin_penelitian" text="Surat Izin Penelitian" />
+                        <div class="flex gap-2">
+
+                            <Input
+                                id="file_surat_izin_penelitian"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_surat_izin_penelitian: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_surat_izin_penelitian) === "string"}>
+                                <Button class="" onclick={() => route.download(data()?.file_surat_izin_penelitian)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_formulir_telaah_penelitian" text="Formulir Telaah Penelitian" />
-                        <Input
-                            id="file_formulir_telaah_penelitian"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_formulir_telaah_penelitian: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_formulir_telaah_penelitian"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_formulir_telaah_penelitian: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_formulir_telaah_penelitian) === "string" && data()?.file_formulir_telaah_penelitian != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_formulir_telaah_penelitian)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_formulir_ketersediaan_penelitian" text="Formulir Ketersediaan Penelitian" />
-                        <Input
-                            id="file_formulir_ketersediaan_penelitian"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_formulir_ketersediaan_penelitian: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_formulir_ketersediaan_penelitian"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_formulir_ketersediaan_penelitian: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_formulir_ketersediaan_penelitian) === "string" && data()?.file_formulir_ketersediaan_penelitian != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_formulir_ketersediaan_penelitian)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek" />
-                        <Input
-                            id="file_informasi_calon_subjek"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_informasi_calon_subjek: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_informasi_calon_subjek"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_informasi_calon_subjek: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_informasi_calon_subjek) === "string" && data()?.file_informasi_calon_subjek != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_informasi_calon_subjek)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_pernyataan_konflik" text="Pernyataan Konflik" />
-                        <Input
-                            id="file_pernyataan_konflik"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_pernyataan_konflik: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_pernyataan_konflik"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_pernyataan_konflik: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_pernyataan_konflik) === "string" && data()?.file_pernyataan_konflik != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_pernyataan_konflik)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_proposal_penelitian" text="Proposal Penelitian" />
-                        <Input
-                            id="file_proposal_penelitian"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_proposal_penelitian: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_proposal_penelitian"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_proposal_penelitian: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_proposal_penelitian) === "string" && data()?.file_proposal_penelitian != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_proposal_penelitian)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_surat_kaji_etik" text="Surat Kaji Etik" />
-                        <Input
-                            id="file_surat_kaji_etik"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_surat_kaji_etik: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_surat_kaji_etik"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_surat_kaji_etik: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_surat_kaji_etik) === "string" && data()?.file_surat_kaji_etik != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_surat_kaji_etik)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_cv_peneliti" text="CV Peneliti" />
-                        <Input
-                            id="file_cv_peneliti"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_cv_peneliti: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_cv_peneliti"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_cv_peneliti: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_cv_peneliti) === "string" && data()?.file_cv_peneliti != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_cv_peneliti)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_cv_tim_peneliti" text="CV Tim Peneliti" />
-                        <Input
-                            id="file_cv_tim_peneliti"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_cv_tim_peneliti: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_cv_tim_peneliti"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_cv_tim_peneliti: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_cv_tim_peneliti) === "string" && data()?.file_cv_tim_peneliti != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_cv_tim_peneliti)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_persetujuan" text="File Persetujuan" />
-                        <Input
-                            id="file_persetujuan"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_persetujuan: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_persetujuan"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_persetujuan: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_persetujuan) === "string" && data()?.file_persetujuan != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_persetujuan)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_kuesioner" text="File Kuesioner" />
-                        <Input
-                            id="file_kuesioner"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_kuesioner: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_kuesioner"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_kuesioner: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_kuesioner) === "string" && data()?.file_kuesioner != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_kuesioner)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_daftar_pustaka" text="Daftar Pustaka" />
-                        <Input
-                            id="file_daftar_pustaka"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_daftar_pustaka: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_daftar_pustaka"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_daftar_pustaka: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_daftar_pustaka) === "string" && data()?.file_daftar_pustaka != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_daftar_pustaka)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>
                         <FormLabel for="file_bukti_transfer" text="Bukti Transfer" />
-                        <Input
-                            id="file_bukti_transfer"
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => setForm({ ...form(), file_bukti_transfer: e.currentTarget.files?.[0] as File })}
-                        />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_bukti_transfer"
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={(e) => setForm({ ...form(), file_bukti_transfer: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_bukti_transfer) === "string" && data()?.file_bukti_transfer != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_bukti_transfer)}>Download</Button>
+                            </Show>
+                        </div>
                     </div>
 
                     <div>

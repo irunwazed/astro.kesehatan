@@ -53,7 +53,7 @@ export default function PenelitianData() {
                     },
                     width: "200px",
                 },
-                { key: "nama", header: "Nama" },
+                { key: "nama", header: "Nama Penelitian" },
                 { key: "deskripsi", header: "deskripsi" },
                 { key: "tujuan", header: "tujuan" },
             ]}
@@ -239,14 +239,24 @@ export default function PenelitianData() {
             ]}
             actions={[
                 {
+                    label: "Perbaikan Studi Awal",
+                    icon: "update",
+                    class: "bg-blue-500 text-white hover:bg-blue-600",
+                    onClick: (row) => {
+                        route.push("/app/penelitian/awal?id=" + row.id)
+                    },
+                    hidden: (row) => !(row.status == StatusPenelitian.TolakPenelitian ||  row.status == StatusPenelitian.Submit), 
+                    // disabled: (row) => (row.status != StatusPenelitian.TerimaPenelitian),    
+                },
+                {
                     label: "Input Berkas Penelitian",
-                    icon: "delete",
+                    icon: "update",
                     class: "bg-blue-500 text-white hover:bg-blue-600",
                     onClick: (row) => {
                         route.push("/app/penelitian/form1?id=" + row.id)
                     },
-                    hidden: (row) => row.status <= StatusPenelitian.Submit, 
-                    disabled: (row) => (row.status != StatusPenelitian.TerimaPenelitian),    
+                    hidden: (row) => !(row.status == StatusPenelitian.TerimaPenelitian || row.status == StatusPenelitian.TolakPenelitianEtik ), 
+                    // disabled: (row) => (row.status != StatusPenelitian.TerimaPenelitian),    
                 },
                 {
                     label: "Perpanjang Penelitian",

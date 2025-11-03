@@ -74,7 +74,7 @@ export interface FormPermohonanAwalPenelitian {
 export interface FormPermohonanPenelitian {
     id: string;
     nama: string;
-    mahasiswa_proposal: string;
+    check_mahasiswa: string;
     file_surat_izin_penelitian: string | File;
     file_formulir_telaah_penelitian: string | File;
     file_formulir_ketersediaan_penelitian: string | File;
@@ -123,6 +123,9 @@ export interface Penelitian {
     pendanaan: string | null;
     sponsor: string | null;
 
+    biaya_penelitian:number,
+    check_mahasiswa:string,
+
     file_permohonan_instansi: string | null;
     file_draft_penelitian: string | null;
     mahasiswa_proposal: string | null;
@@ -140,6 +143,8 @@ export interface Penelitian {
     file_daftar_pustaka: string | null;
     file_bukti_transfer: string | null;
     file_etik: string | null
+
+    izin_etik: string,
 }
 
 

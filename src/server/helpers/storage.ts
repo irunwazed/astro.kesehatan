@@ -13,7 +13,7 @@ export const uploadFile = async (folder:string, fileName:string, file:File) => {
     .upload(filePath, file)
   if (error) {
     console.error('Upload error:', error)
-    return null
+    return ""
   } else {
     console.log('Uploaded:', data)
     return filePath

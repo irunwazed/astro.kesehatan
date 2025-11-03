@@ -76,12 +76,14 @@ export default function PenelitianApprovalData() {
             return false
         }
 
-        if (form().jenis == "") {
-            showAlert({
-                title: "Peringatan",
-                message: "Masukkan Jenis"
-            })
-            return false
+        if (form().status == StatusPenelitian.TerimaPenelitian) {
+            if (form().jenis == "") {
+                showAlert({
+                    title: "Peringatan",
+                    message: "Masukkan Jenis"
+                })
+                return false
+            }
         }
         return true
     }
@@ -161,20 +163,6 @@ export default function PenelitianApprovalData() {
             <div class="flex flex-col gap-4 mt-4">
 
 
-                <div>
-                    <FormLabel for="jenis" text="Jenis" />
-                    <Select options={[
-                        { label: "Pilih Jenis", value: "" },
-                        { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
-                        { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
-                        { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
-                        { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
-                        { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
-                        { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
-                    ]}
-                        onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
-
-                </div>
 
                 <div>
                     <FormLabel for="status" text="Status" />
@@ -194,6 +182,23 @@ export default function PenelitianApprovalData() {
                             value={form()?.alasan}
                             onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
                         />
+                    </div>
+                </Show>
+
+                <Show when={form().status == StatusPenelitian.TerimaPenelitian}>
+                    <div>
+                        <FormLabel for="jenis" text="Jenis" />
+                        <Select options={[
+                            { label: "Pilih Jenis", value: "" },
+                            { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
+                            { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
+                            { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
+                            { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
+                            { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
+                            { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
+                        ]}
+                            onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
+
                     </div>
                 </Show>
 
