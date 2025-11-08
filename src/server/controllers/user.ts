@@ -13,7 +13,20 @@ export class UserController {
     }
 
     async register(req: Request) {
+        const repository = new UserRepository();
+        const { email, password, full_name } = await req.json();
 
+        const register = await repository.register(email, password, full_name)
+
+        if (!register) return new Response(JSON.stringify({
+            status: false,
+            message: 'Gagal registrasi',
+        }), { status: 400 });
+
+        return new Response(JSON.stringify({
+            status: true,
+            message: "Registrasi berhasil",
+        }), { status: 200 });
     }
 
     async login(req: Request) {

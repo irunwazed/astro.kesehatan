@@ -7,6 +7,7 @@ import { StatusPenelitian, type FormPermohonanAwalPenelitian, type GroupResponse
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
 import Select from "@solid-ui/Select";
+import { CONSTANT } from "src/helpers/lib/constant";
 
 export default function FormPenelitianAwal() {
 
@@ -25,12 +26,12 @@ export default function FormPenelitianAwal() {
         jumlah_minimal_sampel: 0
     }
     const [id, setId] = createSignal("");
-    const [data, setData] = createSignal<Penelitian | null>(null);
+    const [data, setData] = createSignal<Penelitian | any>(null);
     const [loading, setLoading] = createSignal(false);
     const [loadingSave, setLoadingSave] = createSignal(false);
     const [open, setOpen] = createSignal(false);
     const [isUpdate, setIsUpdate] = createSignal(false)
-    const [form, setForm] = createSignal<FormPermohonanAwalPenelitian>(formDefault)
+    const [form, setForm] = createSignal<FormPermohonanAwalPenelitian|any>(formDefault)
 
     // const handleSave = async () => {
     //     setLoadingSave(true);
@@ -67,10 +68,10 @@ export default function FormPenelitianAwal() {
                 deskripsi: data.data.deskripsi,
                 tujuan: data.data.tujuan,
                 variabel_lain: data.data.variabel_lain,
-                pendanaan: parseInt(data.data.pendanaan),
+                pendanaan: parseInt(data.data.pendanaan ?? ""),
                 sponsor: data.data.sponsor,
-                waktu_awal_sample: parseInt(data.data.waktu_awal_sample),
-                waktu_akhir_sample: parseInt(data.data.waktu_akhir_sample),
+                waktu_awal_sample: parseInt(data.data.waktu_awal_sample ?? ""),
+                waktu_akhir_sample: parseInt(data.data.waktu_akhir_sample ?? ""),
                 jumlah_minimal_sampel: data.data.jumlah_minimal_sampel
             })
             if (data.data.status == StatusPenelitian.TolakPenelitian || data.data.status == StatusPenelitian.Submit) {
@@ -148,7 +149,7 @@ export default function FormPenelitianAwal() {
             formData.append("file_permohonan_instansi", form().file_permohonan_instansi);
 
             // Validate file sizes
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const maxFileSize = CONSTANT.MAX_UPLOAD;
             let error2: string[] = []
             formData.forEach((value, key) => {
                 if (value instanceof File && value.size > maxFileSize) {

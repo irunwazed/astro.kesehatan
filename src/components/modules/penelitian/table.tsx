@@ -259,7 +259,7 @@ export default function PenelitianData() {
                     // disabled: (row) => (row.status != StatusPenelitian.TerimaPenelitian),    
                 },
                 {
-                    label: "Perpanjang Penelitian",
+                    label: "Perpanjang Etik Penelitian",
                     icon: "update",
                     class: "bg-red-500 text-white hover:bg-red-600",
                     onClick: (row) => {

@@ -14,6 +14,8 @@ const routes = new Map<string, Handler>();
 
 routes.set('GET:/', HomeController);
 routes.set('POST:/login', user.login);
+routes.set('POST:/register', user.register);
+
 
 routes.set('GET:/penelitian', penelitan.getPenelitianUser);
 routes.set('GET:/penelitian/data', penelitan.getPenelitianById);

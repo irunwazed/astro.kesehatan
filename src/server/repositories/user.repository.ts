@@ -34,7 +34,7 @@ export class UserRepository {
         })
 
 
-        if (error) return error.message
+        if (error) return false
         console.log('User terdaftar:', data.user)
 
         // Tambahkan ke tabel profiles
@@ -46,7 +46,7 @@ export class UserRepository {
         //         email_confirm: true,
         //     })
         //     console.log("confirm", confirm)
-        return null
+        return true
     }
 
     async login(email: string, password: string) {

@@ -8,6 +8,7 @@ import { GroupService } from "src/client/service/group";
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
 import Select from "@solid-ui/Select";
+import { CONSTANT } from "src/helpers/lib/constant";
 
 export default function Form1Data() {
 
@@ -33,12 +34,12 @@ export default function Form1Data() {
     }
 
     const [id, setId] = createSignal("");
-    const [data, setData] = createSignal<Penelitian | null>(null);
+    const [data, setData] = createSignal<Penelitian | any>(null);
     const [loading, setLoading] = createSignal(false);
     const [loadingSave, setLoadingSave] = createSignal(false);
     const [open, setOpen] = createSignal(false);
     const [isUpdate, setIsUpdate] = createSignal(false)
-    const [form, setForm] = createSignal<FormPermohonanPenelitian>(formDefault)
+    const [form, setForm] = createSignal<FormPermohonanPenelitian|any>(formDefault)
     const [mahasiswa, setMahasiswa] = createSignal(true)
 
     onMount(async () => {
@@ -154,7 +155,7 @@ export default function Form1Data() {
             });
 
             // Validate file sizes
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const maxFileSize = CONSTANT.MAX_UPLOAD;
             let error2:string[] = []
             formData.forEach((value, key) => {
                 if (value instanceof File && value.size > maxFileSize) {

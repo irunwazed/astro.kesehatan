@@ -7,6 +7,7 @@ import type { FormPermohonanPenelitian, FormPerpanjangPenelitian, GroupResponse,
 import { GroupService } from "src/client/service/group";
 import { PenelitianService } from "src/client/service/penelitian";
 import { route } from "src/helpers/lib/route";
+import { CONSTANT } from "src/helpers/lib/constant";
 
 export default function FormPerpanjang() {
 
@@ -114,17 +115,15 @@ export default function FormPerpanjang() {
             formData.append('file_proposal_penelitian', form().file_proposal_penelitian);
 
             // Validate file sizes
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const maxFileSize = CONSTANT.MAX_UPLOAD;
             formData.forEach((value, key) => {
                 if (value instanceof File && value.size > maxFileSize) {
-
                     showAlert({
                         title: "Validasi Error",
                         message: errors.join('\n'),
                         icon: "error"
                     });
                     return;
-                    // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
                 }
             });
 
