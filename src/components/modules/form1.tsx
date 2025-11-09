@@ -208,6 +208,13 @@ export default function Form1Data() {
         <div class="p-6">
             <div class="bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-6">Form Permohonan Penelitian</h2>
+
+
+                <div class="mb-6 flex justify-end items-center gap-2">
+                    <a class="bg-blue-400 text-blue-50 py-2 px-4 shadow-lg rounded-lg hover:opacity-90" target="_blank" href="https://drive.google.com/file/d/1Q0Z2lZo7PzryakVaYxCUAZGXXm_89sB5/view?usp=drive_link">Pedoman</a>
+                    <a class="bg-blue-500 text-blue-50 py-2 px-4 shadow-lg rounded-lg hover:opacity-90" target="_blank" href="https://drive.google.com/file/d/1h7bGxjkmlJ6UEOfpMqhzSfgL-rBaZ--K/view?usp=drive_link">Download</a>
+                   
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>

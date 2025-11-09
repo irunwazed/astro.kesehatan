@@ -127,7 +127,7 @@ import Layout from "../layouts/Layout.astro";
                     body: JSON.stringify({ email, password }),
                 });
 
-                const result: { data: LoginResponse } = await response.json();
+                const result: { data: LoginResponse, message:string } = await response.json();
 
                 if (response.ok) {
                     console.log("result", result);
@@ -142,7 +142,7 @@ import Layout from "../layouts/Layout.astro";
                     route.push("/app");
                 } else {
                     alert(
-                        `❌ Gagal login: ${result.data.message ?? "Email atau password salah"}`,
+                        `❌ Gagal login: ${result?.message ?? "Email atau password salah"}`,
                     );
                 }
             } catch (error) {

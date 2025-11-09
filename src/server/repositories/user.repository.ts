@@ -1,5 +1,6 @@
 // import { createClient } from "@supabase/supabase-js";
 
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../configs/db"
 
 // const supabase = createClient(import.meta.env.SUPABASE_URL || "", import.meta.env.SUPABASE_KEY || "")
@@ -29,10 +30,9 @@ export class UserRepository {
             password,
             options: {
                 emailRedirectTo: "https://your-app.com/welcome",
-                data: { full_name: fullName, roles: roles }, // otomatis masuk ke auth metadata
+                data: { full_name: fullName, roles }, // otomatis masuk ke auth metadata
             },
         })
-
 
         if (error) return false
         console.log('User terdaftar:', data.user)
@@ -66,6 +66,20 @@ export class UserRepository {
         else console.log('Logout sukses!')
     }
 
+    async updateRoles(userId: string, roles: string[]) {
+
+        const { data: userUpdate, error: authError } = await supabase.auth.admin.updateUserById(userId, {
+            user_metadata: { roles },
+        });
+        if (authError) {
+            console.error('Gagal update auth metadata:', authError.message);
+            return false;
+        }
+
+        const { error } = await supabase.from('profiles').update({ roles: roles }).eq('id', userId)
+        if (error) console.error('Gagal update roles:', error.message)
+        return true;
+    }
 
     async getProfiles() {
         const { data, error } = await supabase.from('profiles').select('*')
