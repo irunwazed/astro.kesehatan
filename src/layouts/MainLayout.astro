@@ -3,13 +3,16 @@ import GlobalAlert from "src/components/solid/molecules/GlobalAlert";
 import "../styles/global.css";
 import { getUserFromToken, checkRole, type UserMetadata } from "src/helpers/lib/jwt";
 import { USER } from "src/helpers/lib/constant";
-
 interface Props {
   title: string;
 }
+
 const { title } = Astro.props;
+
 const token = Astro.cookies.get("token")?.value;
+console.log("Token:", token);
 const user = getUserFromToken(token || "");
+console.log("User dari token di layout:", user);
 ---
 
 <!doctype html>
@@ -19,11 +22,9 @@ const user = getUserFromToken(token || "");
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
   </head>
-
-  <body
-    class="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 flex"
-  >
-    <!-- Sidebar -->
+  <body   class="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 flex">
+    
+<!-- Sidebar -->
     <aside
       class="fixed top-0 left-0 h-screen w-64 bg-white/80 backdrop-blur-lg border-r border-white/40 shadow-md rounded-r-3xl"
     >
@@ -207,8 +208,44 @@ const user = getUserFromToken(token || "");
         <GlobalAlert client:load />
       </div>
     </main>
+    
 
-    <!-- Dropdown & Logout Script -->
+    <script>
+      import { isLoggedIn } from "src/helpers/lib/auth";
+      import { route } from "src/helpers/lib/route";
+      import { clearAllCookieStorage } from "src/helpers/lib/storage";
+
+      // Redirect ke login kalau belum login
+      if (!isLoggedIn()) {
+        alert("Silakan login terlebih dahulu!");
+        route.push("/login");
+      }
+
+      // Logout
+      const logoutBtn = document.querySelector("#logoutBtn");
+      logoutBtn?.addEventListener("click", () => {
+        clearAllCookieStorage();
+        route.push("/login");
+      });
+    </script>
+
+    <!-- <script>
+      // Jalankan saat komponen ini dimuat di browser
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("penelitian-toggle");
+        const dropdown = document.getElementById("penelitian-dropdown");
+        const arrow = document.getElementById("penelitian-arrow");
+
+        toggleBtn?.addEventListener("click", () => {
+          const expanded = toggleBtn.getAttribute("aria-expanded") === "true";
+          toggleBtn.setAttribute("aria-expanded", String(!expanded));
+
+          dropdown!.classList.toggle("hidden");
+          arrow!.classList.toggle("rotate-180");
+        });
+      });
+    </script> -->
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const toggleBtn = document.getElementById("penelitian-toggle");
@@ -223,5 +260,12 @@ const user = getUserFromToken(token || "");
         });
       });
     </script>
+
+    <style>
+      /* Animasi halus saat expand/collapse */
+      #penelitian-dropdown {
+        transition: all 0.2s ease-in-out;
+      }
+    </style>
   </body>
 </html>
