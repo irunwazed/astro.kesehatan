@@ -45,7 +45,7 @@ export const HTTP = async <T>(method: "GET" | "POST" | "PUT" | "DELETE", url: st
     const data = result as ResponseAPI<any>
 
     try {
-        console.log("data", data)
+        console.log("data2", data)
         if (data?.status) {
             if (data?.status >= 500) {
                 showAlert({
