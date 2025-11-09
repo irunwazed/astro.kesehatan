@@ -11,6 +11,7 @@ export type InsertPenelitianAwal = {
   waktu_akhir_sample: number
   pendanaan: number // 1. Mandiri, 2. Sponsor 
   sponsor: string
+  jenis: string
   file_permohonan_instansi?: string
   file_draft_penelitian?: string
 }

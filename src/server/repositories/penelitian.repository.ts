@@ -3,6 +3,7 @@ import { StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { supabase } from "../configs/db";
 import type { FormPermohonanPenelitian, InsertPenelitianAwal, InsertPenelitianPerpanjang } from "../types/penelitian";
 import { getTimeNow } from "src/helpers/lib/time";
+import { USER } from "src/helpers/lib/constant";
 
 
 
@@ -133,7 +134,7 @@ export class PenelitianRepository {
 
   async approval(id: string, jenis: string, status: boolean, alasan: string) { // FormPermohonanPenelitian
     return await supabase.from('penelitian').update({
-      jenis: jenis,
+      // jenis: jenis,
       alasan: alasan,
       status: status ? StatusPenelitian.TerimaPenelitian : StatusPenelitian.TolakPenelitian,
       updated_at: getTimeNow(),
@@ -174,6 +175,29 @@ export class PenelitianRepository {
         updated_at: getTimeNow(),
       }
     ]).eq("id", data.id)
+  }
+
+  async getNotifPenelitian(role:string): Promise<Penelitian[]> {
+
+    let query = supabase.from('penelitian').select('*').order("updated_at", { ascending: false })
+
+    if (role == USER.ADMIN_ETIK) {
+      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
+    } else if (role == USER.ADMIN_VALIDASI) {
+      query = query.eq('status', StatusPenelitian.Submit)
+    } else if (role == USER.ADMIN) {
+      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.Submit])
+    } else {
+      return []
+    }
+
+
+    let { data: penelitian, error } = await query
+    if (!penelitian || penelitian.length == 0) {
+      console.log("error ", error)
+      return []
+    }
+    return penelitian
   }
 
 }

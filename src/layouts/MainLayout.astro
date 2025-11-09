@@ -1,7 +1,11 @@
 ---
 import GlobalAlert from "src/components/solid/molecules/GlobalAlert";
 import "../styles/global.css";
-import { getUserFromToken, checkRole, type UserMetadata } from "src/helpers/lib/jwt";
+import {
+  getUserFromToken,
+  checkRole,
+  type UserMetadata,
+} from "src/helpers/lib/jwt";
 import { USER } from "src/helpers/lib/constant";
 interface Props {
   title: string;
@@ -12,7 +16,6 @@ const { title } = Astro.props;
 const token = Astro.cookies.get("token")?.value;
 console.log("Token:", token);
 const user = getUserFromToken(token || "");
-console.log("User dari token di layout:", user);
 ---
 
 <!doctype html>
@@ -22,9 +25,10 @@ console.log("User dari token di layout:", user);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
   </head>
-  <body   class="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 flex">
-    
-<!-- Sidebar -->
+  <body
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 flex"
+  >
+    <!-- Sidebar -->
     <aside
       class="fixed top-0 left-0 h-screen w-64 bg-white/80 backdrop-blur-lg border-r border-white/40 shadow-md rounded-r-3xl"
     >
@@ -68,7 +72,7 @@ console.log("User dari token di layout:", user);
                 >
                   <path
                     d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
-                  />
+                  ></path>
                 </svg>
                 Penelitian
               </span>
@@ -84,8 +88,7 @@ console.log("User dari token di layout:", user);
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
+                  d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
@@ -106,7 +109,10 @@ console.log("User dari token di layout:", user);
                 )
               }
               {
-                checkRole(user?.roles ?? [], [USER.ADMIN, USER.ADMIN_VALIDASI]) && (
+                checkRole(user?.roles ?? [], [
+                  USER.ADMIN,
+                  USER.ADMIN_VALIDASI,
+                ]) && (
                   <li>
                     <a
                       href="/app/penelitian/inbox"
@@ -145,18 +151,85 @@ console.log("User dari token di layout:", user);
             <h1 class="text-3xl font-semibold text-gray-800">{title}</h1>
 
             <div class="flex items-center space-x-4">
-              <button class="p-2 text-gray-600 hover:text-blue-700 transition">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+              <div class="relative inline-block">
+                <!-- Tombol Notifikasi -->
+                <button
+                  id="notifBtn"
+                  class="p-2 text-gray-600 hover:text-blue-700 transition"
                 >
-                  <path
-                    d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+                    ></path>
+                  </svg>
+                </button>
+
+                <!-- Dropdown List -->
+                <div
+                  id="notifDropdown"
+                  class="hidden absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                >
+                  <div
+                    class="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700"
+                  >
+                    Notifikasi
+                  </div>
+
+                  <ul class="max-h-60 overflow-y-auto" id="notif-isi">
+                    <!-- <li
+                      class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+                    >
+                      📩 Pesan baru dari Dwi
+                    </li>
+                    <li
+                      class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+                    >
+                      ✅ Dokumen telah disetujui
+                    </li>
+                    <li
+                      class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+                    >
+                      ⚙️ Pembaruan sistem berhasil
+                    </li>
+                    <li
+                      class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+                    >
+                      🕓 Jadwal meeting jam 3 sore
+                    </li> -->
+                  </ul>
+
+                  <!-- <div class="px-4 py-2 text-center border-t border-gray-100">
+                    <button class="text-sm text-blue-600 hover:underline">
+                      Lihat semua
+                    </button>
+                  </div> -->
+                </div>
+              </div>
+
+              <script>
+                const btn = document.getElementById(
+                  "notifBtn",
+                ) as HTMLButtonElement;
+                const dropdown = document.getElementById(
+                  "notifDropdown",
+                ) as HTMLDivElement;
+
+                btn.addEventListener("click", () => {
+                  dropdown.classList.toggle("hidden");
+                });
+
+                // Klik di luar dropdown -> tutup
+                window.addEventListener("click", (e: any) => {
+                  if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add("hidden");
+                  }
+                });
+              </script>
 
               <details class="relative">
                 <summary
@@ -167,7 +240,9 @@ console.log("User dari token di layout:", user);
                     src="https://via.placeholder.com/32"
                     alt="User avatar"
                   /> -->
-                  <span class="text-sm font-medium text-gray-700">{user?.full_name}</span>
+                  <span class="text-sm font-medium text-gray-700"
+                    >{user?.full_name}</span
+                  >
                   <svg
                     class="w-4 h-4 text-gray-500"
                     fill="none"
@@ -178,8 +253,7 @@ console.log("User dari token di layout:", user);
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M19 9l-7 7-7-7"
-                    />
+                      d="M19 9l-7 7-7-7"></path>
                   </svg>
                 </summary>
 
@@ -208,7 +282,6 @@ console.log("User dari token di layout:", user);
         <GlobalAlert client:load />
       </div>
     </main>
-    
 
     <script>
       import { isLoggedIn } from "src/helpers/lib/auth";
@@ -259,6 +332,62 @@ console.log("User dari token di layout:", user);
           arrow?.classList.toggle("rotate-180");
         });
       });
+    </script>
+
+    <script>
+      import { PenelitianService } from "src/client/service/penelitian";
+import { getStatusPenelitianNama } from "src/helpers/dto/penelitian";
+
+      const notifIsi = document.getElementById("notif-isi") as HTMLUListElement;
+
+      const getTimeFromTimestamp = (timestamp: string) => {
+        const date = new Date(timestamp);
+
+        // buatkan agar ambil sudah berapa lama dari sekarang
+        const now = new Date();
+        const diff = now.getTime() - date.getTime(); // selisih dalam milidetik
+        const diffMinutes = Math.floor(diff / (1000 * 60));
+        const diffHours = Math.floor(diff / (1000 * 60 * 60));
+        const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+        if (diffDays > 0) {
+          return `${diffDays} hari yang lalu`;
+        } else if (diffHours > 0) {
+          return `${diffHours} jam yang lalu`;
+        } else if (diffMinutes > 0) {
+          return `${diffMinutes} menit yang lalu`;
+        } else {
+          return `baru saja`;
+        }
+      };
+
+      const getNotifikasi = async () => {
+        try {
+          const response = await PenelitianService.getNotifikasi();
+          const data = response.data;
+          if (!data) {
+            return;
+          }
+          console.log("Notifikasi Penelitian:", data);
+          data.map((item) => {
+            notifIsi.innerHTML += `
+              <li
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+              >
+                📩 Penelitian : ${item.nama} (${getStatusPenelitianNama(item.status)}) diperbarui ${getTimeFromTimestamp(
+              item.updated_at ?? "",
+            )} 
+              </li>
+            `;
+            console.log(
+              "Notifikasi Item:",
+              getTimeFromTimestamp(item.updated_at ?? ""),
+            );
+          });
+        } catch (error) {
+          console.error("Error fetching notifikasi:", error);
+        }
+      };
+      getNotifikasi();
     </script>
 
     <style>

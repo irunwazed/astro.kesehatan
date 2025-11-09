@@ -75,16 +75,7 @@ export default function PenelitianApprovalData() {
             })
             return false
         }
-
-        if (form().status == StatusPenelitian.TerimaPenelitian) {
-            if (form().jenis == "") {
-                showAlert({
-                    title: "Peringatan",
-                    message: "Masukkan Jenis"
-                })
-                return false
-            }
-        }
+        
         return true
     }
 
@@ -185,7 +176,7 @@ export default function PenelitianApprovalData() {
                     </div>
                 </Show>
 
-                <Show when={form().status == StatusPenelitian.TerimaPenelitian}>
+                {/* <Show when={form().status == StatusPenelitian.TerimaPenelitian}>
                     <div>
                         <FormLabel for="jenis" text="Jenis" />
                         <Select options={[
@@ -200,7 +191,7 @@ export default function PenelitianApprovalData() {
                             onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
 
                     </div>
-                </Show>
+                </Show> */}
 
                 <hr class="my-2 border-gray-200" />
                 <div class="flex justify-end gap-2">

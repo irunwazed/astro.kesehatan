@@ -213,7 +213,7 @@ export default function Form1Data() {
                 <div class="mb-6 flex justify-end items-center gap-2">
                     <a class="bg-blue-400 text-blue-50 py-2 px-4 shadow-lg rounded-lg hover:opacity-90" target="_blank" href="https://drive.google.com/file/d/1Q0Z2lZo7PzryakVaYxCUAZGXXm_89sB5/view?usp=drive_link">Pedoman</a>
                     <a class="bg-blue-500 text-blue-50 py-2 px-4 shadow-lg rounded-lg hover:opacity-90" target="_blank" href="https://drive.google.com/file/d/1h7bGxjkmlJ6UEOfpMqhzSfgL-rBaZ--K/view?usp=drive_link">Download</a>
-                   
+                    <a class="bg-slate-500 text-slate-50 py-2 px-4 shadow-lg rounded-lg hover:opacity-90" target="_blank" href="https://drive.google.com/drive/folders/1G7jklpP4g9nxa-ARO2w0uiIwzmdJDktR?usp=drive_link">Format Dokumen</a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}

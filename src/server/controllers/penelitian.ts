@@ -114,6 +114,7 @@ const processFormDataPenelitianAwal = async (user_id: string, formData: FormData
     jumlah_minimal_sampel: parseInt(formData.get('jumlah_minimal_sampel') as string),
     pendanaan: parseInt(formData.get('pendanaan') as string),
     sponsor: formData.get('sponsor') as string,
+    jenis: formData.get('jenis') as string,
     user_id: user_id,
     waktu_awal_sample: parseInt(formData.get('waktu_awal_sample') as string),
     waktu_akhir_sample: parseInt(formData.get('waktu_akhir_sample') as string),
@@ -168,6 +169,40 @@ export class PenelitianController {
   constructor() {
   }
 
+  async getNotifikasi(req: Request) {
+    try {
+      const auth = await userRepository.getAuth(req)
+      if (!auth) {
+        return new Response(  
+          JSON.stringify({ message: 'Token tidak valid' }),
+          { status: 401 }
+        );
+      }
+      const role = auth.user_metadata.roles as string[]
+
+      console.log("auth", auth)
+
+      if(!role) {
+        return new Response(JSON.stringify({
+          status: false,
+          message: "Role tidak ditemukan",
+        }), { status: 400 });
+      }
+
+      const data = await repository.getNotifPenelitian(role[0] ?? "");
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data berhasil didapat",
+        data: data
+      }), { status: 200 });
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({  
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
 
   async getPenelitianById(req: Request) {
     try {
@@ -303,7 +338,7 @@ export class PenelitianController {
       console.log("id", id)
 
       let result:any
-      if (id == "") {
+      if (id == "" || id == null) {
         result = await repository.create(data);
       } else {
         result = await repository.update(id, data);

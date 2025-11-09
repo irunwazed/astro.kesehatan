@@ -67,6 +67,7 @@ export interface FormPermohonanAwalPenelitian {
     sponsor: string
     file_permohonan_instansi: string | File;
     file_draft_penelitian: string | File;
+    jenis: string;
 }
 
 

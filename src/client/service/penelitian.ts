@@ -24,6 +24,7 @@ export const PenelitianService = {
   },
 
   getPenelitianUser: () => GET<Penelitian[]>({ url: "/api/penelitian" }),
+  getNotifikasi: () => GET<Penelitian[]>({ url: "/api/penelitian/notif" }),
   getPenelitianById: (id:string) => GET<Penelitian|null>({ url: "/api/penelitian/data?id="+id }),
   getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
   approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),

@@ -23,7 +23,8 @@ export default function FormPenelitianAwal() {
         waktu_akhir_sample: 0,
         file_draft_penelitian: "",
         file_permohonan_instansi: "",
-        jumlah_minimal_sampel: 0
+        jumlah_minimal_sampel: 0,
+        jenis: "",
     }
     const [id, setId] = createSignal("");
     const [data, setData] = createSignal<Penelitian | any>(null);
@@ -31,7 +32,7 @@ export default function FormPenelitianAwal() {
     const [loadingSave, setLoadingSave] = createSignal(false);
     const [open, setOpen] = createSignal(false);
     const [isUpdate, setIsUpdate] = createSignal(false)
-    const [form, setForm] = createSignal<FormPermohonanAwalPenelitian|any>(formDefault)
+    const [form, setForm] = createSignal<FormPermohonanAwalPenelitian | any>(formDefault)
 
     // const handleSave = async () => {
     //     setLoadingSave(true);
@@ -96,6 +97,7 @@ export default function FormPenelitianAwal() {
         if (!form.waktu_akhir_sample) errors.push("waktu_akhir_sample Peneliti wajib diisi");
         if (!form.pendanaan) errors.push("Pendanaan Peneliti wajib diisi");
         if (!form.file_permohonan_instansi) errors.push("Pendanaan Peneliti wajib diisi");
+        if (!form.jenis) errors.push("Jenis wajib diisi");
 
         if (!form['file_draft_penelitian']) errors.push(`Draft Penelitian wajib diupload`);
         if (!form['file_permohonan_instansi']) errors.push(`Surat Permohonan Instansi wajib diupload`);
@@ -143,6 +145,7 @@ export default function FormPenelitianAwal() {
             formData.append('waktu_akhir_sample', form().waktu_akhir_sample.toString());
             formData.append('deskripsi', form().file_draft_penelitian);
             formData.append('deskripsi', form().deskripsi);
+            formData.append('jenis', form().jenis);
 
 
             formData.append("file_draft_penelitian", form().file_draft_penelitian);
@@ -283,6 +286,11 @@ export default function FormPenelitianAwal() {
                             ]}
                                 onInput={(e) => setForm({ ...form(), pendanaan: parseInt(e.currentTarget.value) })} />
                         </div>
+
+                        
+                    </div>
+
+                    <div class="flex gap-2">
                         <Show when={form().pendanaan == 2}>
                             <div>
                                 <FormLabel for="sponsor" text="Jika sponsor, sebutkan nama sponsornya" />
@@ -293,6 +301,20 @@ export default function FormPenelitianAwal() {
                                 />
                             </div>
                         </Show>
+                        <div class="flex-1">
+                            <FormLabel for="jenis" text="Jenis" />
+                            <Select options={[
+                                { label: "Pilih Jenis", value: "" },
+                                { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
+                                { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
+                                { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
+                                { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
+                                { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
+                                { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
+                            ]}
+                                onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
+
+                        </div>
                     </div>
 
 
