@@ -1,0 +1,149 @@
+---
+export const prerender = false;
+// import Layout from "../../layouts/AppLayout.astro";
+import { getCookie } from "src/helpers/lib/storage";
+import { getUserFromToken } from "src/helpers/lib/jwt";
+import Layout from "src/layouts/Layout.astro";
+import MainLayout from "src/layouts/MainLayout.astro";
+
+const token = Astro.cookies.get("token")?.value || "";
+const user = getUserFromToken(token);
+const full_name = user?.full_name ?? "User Tidak Dikenal";
+const email = user?.email ?? "Tidak ada email";
+---
+
+<MainLayout title="Profil Pengguna">
+  <div
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 px-4"
+  >
+    <div
+      class="bg-white/90 backdrop-blur-md shadow-xl rounded-2xl w-full max-w-2xl p-8 border border-white/60"
+    >
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-1">Profil Pengguna 👤</h2>
+        <p class="text-gray-500 text-sm">Informasi akun dan reset password Anda</p>
+      </div>
+
+      <!-- Informasi Profil -->
+      <div class="space-y-5 mb-8">
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Nama Lengkap</label>
+          <input
+            type="text"
+            readonly
+            value={full_name}
+            class="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-gray-700 rounded-md focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Email</label>
+          <input
+            type="email"
+            readonly
+            value={email}
+            class="w-full px-4 py-2 border border-gray-200 bg-gray-50 text-gray-700 rounded-md focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- Garis pembatas -->
+      <hr class="my-6 border-gray-200" />
+
+      <!-- Form Reset Password -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Reset Password 🔑</h3>
+        <form id="resetForm" class="space-y-5">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Password Lama</label>
+            <input
+              type="password"
+              id="old_password"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Password Baru</label>
+            <input
+              type="password"
+              id="new_password"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-none"
+              placeholder="Password baru"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Konfirmasi Password Baru</label>
+            <input
+              type="password"
+              id="confirm_password"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-400 focus:outline-none"
+              placeholder="Ulangi password baru"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-2 rounded-md font-medium hover:opacity-90 transition"
+          >
+            Simpan Password Baru
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { route } from "src/helpers/lib/route";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector("#resetForm");
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const oldPass = (document.querySelector("#old_password") as HTMLInputElement)?.value.trim();
+        const newPass = (document.querySelector("#new_password") as HTMLInputElement)?.value.trim();
+        const confirmPass = (document.querySelector("#confirm_password") as HTMLInputElement)?.value.trim();
+
+        if (!oldPass || !newPass || !confirmPass) {
+          alert("Harap isi semua kolom password!");
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          alert("Password baru dan konfirmasi tidak cocok!");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/reset-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              old_password: oldPass,
+              new_password: newPass,
+            }),
+          });
+
+          const result = await response.json();
+          if (response.ok && result.status) {
+            alert("✅ Password berhasil diubah!");
+            // route.reload();
+          } else {
+            alert(`❌ Gagal ubah password: ${result.message || "Terjadi kesalahan"}`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Terjadi kesalahan pada server.");
+        }
+      });
+    });
+  </script>
+</Layout>

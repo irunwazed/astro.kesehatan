@@ -3,16 +3,13 @@ import GlobalAlert from "src/components/solid/molecules/GlobalAlert";
 import "../styles/global.css";
 import { getUserFromToken, checkRole, type UserMetadata } from "src/helpers/lib/jwt";
 import { USER } from "src/helpers/lib/constant";
+
 interface Props {
   title: string;
 }
-
 const { title } = Astro.props;
-
 const token = Astro.cookies.get("token")?.value;
-console.log("Token:", token);
 const user = getUserFromToken(token || "");
-console.log("User dari token di layout:", user);
 ---
 
 <!doctype html>
@@ -22,23 +19,27 @@ console.log("User dari token di layout:", user);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
   </head>
-  <body class="bg-gray-50">
+
+  <body
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-teal-50 to-green-50 flex"
+  >
     <!-- Sidebar -->
-    <aside class="fixed top-0 left-0 h-screen w-64 bg-white border-r shadow-sm">
-      <div class="p-4">
-        <h2 class="text-xl font-bold text-gray-800">Health Research</h2>
+    <aside
+      class="fixed top-0 left-0 h-screen w-64 bg-white/80 backdrop-blur-lg border-r border-white/40 shadow-md rounded-r-3xl"
+    >
+      <div class="p-6 border-b border-white/30">
+        <h2 class="text-2xl font-bold text-gray-800">Penelitian RSABHK</h2>
       </div>
-      <nav class="mt-4">
+      <nav class="mt-6">
         <ul class="space-y-2">
-          <!-- Dashboard -->
           <li>
             <a
               href="/app"
-              class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              class="flex items-center px-5 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-3"
+                class="h-5 w-5 mr-3 text-blue-600"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -50,23 +51,23 @@ console.log("User dari token di layout:", user);
             </a>
           </li>
 
-          <!-- Penelitian (Dropdown) -->
+          <!-- Penelitian Dropdown -->
           <li class="relative">
             <button
               id="penelitian-toggle"
-              class="flex w-full items-center justify-between px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              class="flex w-full items-center justify-between px-5 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
               aria-expanded="false"
             >
               <span class="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-3"
+                  class="h-5 w-5 mr-3 text-blue-600"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
                   <path
                     d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
-                  ></path>
+                  />
                 </svg>
                 Penelitian
               </span>
@@ -82,43 +83,45 @@ console.log("User dari token di layout:", user);
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M19 9l-7 7-7-7"></path>
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
-            <ul id="penelitian-dropdown" class="hidden mt-1 space-y-1 pl-8">
+            <ul
+              id="penelitian-dropdown"
+              class="hidden mt-1 space-y-1 pl-8 text-sm"
+            >
               {
                 checkRole(user?.roles ?? [], [USER.ADMIN, USER.USER]) && (
                   <li>
                     <a
                       href="/app/penelitian"
-                      class="block px-4 py-2 text-gray-600 hover:bg-blue-50 hover:text-blue-700 rounded"
+                      class="block px-3 py-1.5 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-700"
                     >
                       Penelitian Input
                     </a>
                   </li>
                 )
               }
-
               {
                 checkRole(user?.roles ?? [], [USER.ADMIN, USER.ADMIN_VALIDASI]) && (
                   <li>
                     <a
                       href="/app/penelitian/inbox"
-                      class="block px-4 py-2 text-gray-600 hover:bg-blue-50 hover:text-blue-700 rounded"
+                      class="block px-3 py-1.5 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-700"
                     >
                       Penelitian Masuk
                     </a>
                   </li>
                 )
               }
-
               {
                 checkRole(user?.roles ?? [], [USER.ADMIN, USER.ADMIN_ETIK]) && (
                   <li>
                     <a
                       href="/app/penelitian/publish"
-                      class="block px-4 py-2 text-gray-600 hover:bg-blue-50 hover:text-blue-700 rounded"
+                      class="block px-3 py-1.5 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-700"
                     >
                       Penelitian Etik
                     </a>
@@ -131,16 +134,17 @@ console.log("User dari token di layout:", user);
       </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="ml-64 p-8">
+    <!-- Konten utama -->
+    <main
+      class="flex-1 ml-64 min-h-screen p-10 bg-white/70 backdrop-blur-md rounded-l-3xl border-l border-white/40 shadow-inner"
+    >
       <div class="max-w-7xl mx-auto">
-        <header class="mb-8">
+        <header class="mb-10">
           <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800">{title}</h1>
+            <h1 class="text-3xl font-semibold text-gray-800">{title}</h1>
 
             <div class="flex items-center space-x-4">
-              <!-- Tombol notifikasi -->
-              <button class="p-2 text-gray-600 hover:text-gray-800">
+              <button class="p-2 text-gray-600 hover:text-blue-700 transition">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-6 w-6"
@@ -149,21 +153,20 @@ console.log("User dari token di layout:", user);
                 >
                   <path
                     d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
-                  ></path>
+                  />
                 </svg>
               </button>
 
-              <!-- Dropdown tanpa JS -->
               <details class="relative">
                 <summary
-                  class="flex items-center space-x-2 cursor-pointer list-none hover:bg-gray-50 px-2 py-1 rounded-md"
+                  class="flex items-center space-x-2 cursor-pointer list-none hover:bg-white/40 px-2 py-1 rounded-md transition"
                 >
-                  <img
-                    class="h-8 w-8 rounded-full"
+                  <!-- <img
+                    class="h-8 w-8 rounded-full border border-white/60 shadow-sm"
                     src="https://via.placeholder.com/32"
                     alt="User avatar"
-                  />
-                  <span class="text-sm font-medium text-gray-700">Admin</span>
+                  /> -->
+                  <span class="text-sm font-medium text-gray-700">{user?.full_name}</span>
                   <svg
                     class="w-4 h-4 text-gray-500"
                     fill="none"
@@ -174,24 +177,23 @@ console.log("User dari token di layout:", user);
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M19 9l-7 7-7-7"></path>
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </summary>
 
-                <!-- Isi dropdown -->
                 <div
-                  class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50"
+                  class="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-md border border-white/50 rounded-lg shadow-lg py-1 z-50"
                 >
                   <a
-                    href="/profile"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    href="/app/profile"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"
                   >
                     Profil
                   </a>
                   <button
                     id="logoutBtn"
-                    type="submit"
-                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
                     Keluar
                   </button>
@@ -202,48 +204,12 @@ console.log("User dari token di layout:", user);
         </header>
 
         <slot />
-
         <GlobalAlert client:load />
       </div>
     </main>
 
+    <!-- Dropdown & Logout Script -->
     <script>
-      import { isLoggedIn } from "src/helpers/lib/auth";
-      import { route } from "src/helpers/lib/route";
-      import { clearAllCookieStorage } from "src/helpers/lib/storage";
-
-      // Redirect ke login kalau belum login
-      if (!isLoggedIn()) {
-        alert("Silakan login terlebih dahulu!");
-        route.push("/login");
-      }
-
-      // Logout
-      const logoutBtn = document.querySelector("#logoutBtn");
-      logoutBtn?.addEventListener("click", () => {
-        clearAllCookieStorage();
-        route.push("/login");
-      });
-    </script>
-
-    <script>
-      import { getUserFromToken } from "src/helpers/lib/jwt";
-      import { route } from "src/helpers/lib/route";
-      import { getCookie } from "src/helpers/lib/storage";
-
-      const getUser = (token: string) => {
-        if (!token) return null;
-
-        const user = getUserFromToken(token);
-        if (!user) {
-          alert("Token tidak valid, silakan login kembali!");
-          route.push("/login");
-          return;
-        }
-        return user;
-      };
-
-      // Jalankan saat komponen ini dimuat di browser
       document.addEventListener("DOMContentLoaded", () => {
         const toggleBtn = document.getElementById("penelitian-toggle");
         const dropdown = document.getElementById("penelitian-dropdown");
@@ -252,22 +218,10 @@ console.log("User dari token di layout:", user);
         toggleBtn?.addEventListener("click", () => {
           const expanded = toggleBtn.getAttribute("aria-expanded") === "true";
           toggleBtn.setAttribute("aria-expanded", String(!expanded));
-
-          dropdown!.classList.toggle("hidden");
-          arrow!.classList.toggle("rotate-180");
+          dropdown?.classList.toggle("hidden");
+          arrow?.classList.toggle("rotate-180");
         });
-
-        const token = getCookie("token") || "";
-        const user = getUser(token);
-        console.log("User dari token:", user);
       });
     </script>
-
-    <style>
-      /* Animasi halus saat expand/collapse */
-      #penelitian-dropdown {
-        transition: all 0.2s ease-in-out;
-      }
-    </style>
   </body>
 </html>
