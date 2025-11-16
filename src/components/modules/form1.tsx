@@ -325,7 +325,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_pernyataan_konflik" text="Pernyataan Konflik" />
+                        <FormLabel for="file_pernyataan_konflik" text="Pernyataan Konflik Kepentingan" />
                         <div class="flex gap-2">
                             <Input
                                 id="file_pernyataan_konflik"
