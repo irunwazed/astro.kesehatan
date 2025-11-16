@@ -65,17 +65,17 @@ export default function FormPenelitianAwal() {
             setData(data.data);
             setForm({
                 ...form(),
-                nama: data.data.nama,
-                deskripsi: data.data.deskripsi,
-                tujuan: data.data.tujuan,
-                variabel_lain: data.data.variabel_lain,
-                pendanaan: parseInt(data.data.pendanaan ?? ""),
-                sponsor: data.data.sponsor,
-                waktu_awal_sample: parseInt(data.data.waktu_awal_sample ?? ""),
-                waktu_akhir_sample: parseInt(data.data.waktu_akhir_sample ?? ""),
-                jumlah_minimal_sampel: data.data.jumlah_minimal_sampel
+                nama: data.data.penelitian.nama,
+                deskripsi: data.data.penelitian.deskripsi,
+                tujuan: data.data.penelitian.tujuan,
+                variabel_lain: data.data.penelitian.variabel_lain,
+                pendanaan: parseInt(data.data.penelitian.pendanaan ?? ""),
+                sponsor: data.data.penelitian.sponsor,
+                waktu_awal_sample: parseInt(data.data.penelitian.waktu_awal_sample ?? ""),
+                waktu_akhir_sample: parseInt(data.data.penelitian.waktu_akhir_sample ?? ""),
+                jumlah_minimal_sampel: data.data.penelitian.jumlah_minimal_sampel
             })
-            if (data.data.status == StatusPenelitian.TolakPenelitian || data.data.status == StatusPenelitian.Submit) {
+            if (data.data.penelitian.status == StatusPenelitian.TolakPenelitian || data.data.penelitian.status == StatusPenelitian.Submit) {
                 setIsUpdate(true)
             }
         }
@@ -88,7 +88,7 @@ export default function FormPenelitianAwal() {
         const errors: string[] = [];
 
         // Required text fields
-        if (!form.nama.trim()) errors.push("Nama Penelitian wajib diisi");
+        if (!form.nama.trim()) errors.push("Judul Penelitian wajib diisi");
         if (!form.tujuan.trim()) errors.push("Tujuan Peneliti wajib diisi");
         if (!form.deskripsi.trim()) errors.push("Deskripsi Peneliti wajib diisi");
         if (!form.variabel_lain.trim()) errors.push("variabel_lain Peneliti wajib diisi");
@@ -209,7 +209,7 @@ export default function FormPenelitianAwal() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
-                        <FormLabel for="nama" text="Nama Penelitian" />
+                        <FormLabel for="nama" text="Judul Penelitian" />
                         <Input
                             id="nama"
                             value={form().nama}

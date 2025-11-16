@@ -58,7 +58,7 @@ export default function FormPerpanjang() {
         const data = await PenelitianService.getPenelitianById(id())
         console.log("data", data)
         if (data.data) {
-            setData(data.data);
+            setData(data.data.penelitian);
         }
         setLoading(false);
     }
@@ -170,7 +170,7 @@ export default function FormPerpanjang() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
-                        <FormLabel for="nama" text="Nama Penelitian" />
+                        <FormLabel for="nama" text="Judul Penelitian" />
                         <Input
                             id="nama"
                             value={data()?.nama}

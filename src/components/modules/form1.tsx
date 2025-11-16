@@ -60,11 +60,11 @@ export default function Form1Data() {
             setData(data.data);
             setForm({
                 ...form(),
-                check_mahasiswa: data.data.check_mahasiswa,
-                biaya_penelitian: data.data.biaya_penelitian,
-                izin_etik: data.data.izin_etik
+                check_mahasiswa: data.data.penelitian.check_mahasiswa,
+                biaya_penelitian: data.data.penelitian.biaya_penelitian,
+                izin_etik: data.data.penelitian.izin_etik
             })
-            if(data.data.status == StatusPenelitian.TolakPenelitianEtik){
+            if(data.data.penelitian.status == StatusPenelitian.TolakPenelitianEtik){
                 setIsUpdate(true)
             }
         }
@@ -80,7 +80,7 @@ export default function Form1Data() {
         // console.log("form", form)
         if (!form.check_mahasiswa) errors.push("Status Mahasiswa wajib diisi");
         if (!form.biaya_penelitian) errors.push("Biaya Penelitian wajib diisi");
-        if (!form.izin_etik) errors.push("Izin Etik wajib diisi");
+        // if (!form.izin_etik) errors.push("Izin Etik wajib diisi");
 
         // Required file fields
         const requiredFiles = [
@@ -128,7 +128,7 @@ export default function Form1Data() {
             formData.append('nama', form().nama);
             formData.append('check_mahasiswa', form().check_mahasiswa);
             formData.append('biaya_penelitian', form().biaya_penelitian.toString());
-            formData.append('izin_etik', form().izin_etik);
+            // formData.append('izin_etik', form().izin_etik);
 
             // Add file fields
             const fileFields = [
@@ -218,7 +218,7 @@ export default function Form1Data() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
-                        <FormLabel for="nama" text="Nama Penelitian" />
+                        <FormLabel for="nama" text="Judul Penelitian" />
                         <Input
                             id="nama"
                             value={data()?.nama}
@@ -459,14 +459,14 @@ export default function Form1Data() {
                         </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                         <FormLabel for="izin_etik" text="Izin Etik" />
                         <Input
                             id="izin_etik"
                             value={form().izin_etik}
                             onInput={(e) => setForm({ ...form(), izin_etik: e.currentTarget.value })}
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div class="flex justify-end gap-2 mt-6">

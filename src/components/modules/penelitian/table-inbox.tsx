@@ -10,6 +10,7 @@ import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
 import { getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
+import PenelitianDetail from "./detail";
 
 type FormPenelitian = {
     id: string,
@@ -30,6 +31,7 @@ export default function PenelitianApprovalData() {
     const [data, setData] = createSignal<Penelitian[]>([]);
     const [loading, setLoading] = createSignal(false);
     const [open, setOpen] = createSignal(false)
+    const [openDetail, setOpenDetail] = createSignal(false)
     const [loadingSave, setLoadingSave] = createSignal(false)
     const [form, setForm] = createSignal(dataForm)
 
@@ -75,7 +77,7 @@ export default function PenelitianApprovalData() {
             })
             return false
         }
-        
+
         return true
     }
 
@@ -105,32 +107,41 @@ export default function PenelitianApprovalData() {
                     },
                     width: "200px",
                 },
-                { key: "nama", header: "Nama" },
+                { key: "nama", header: "Judul" },
                 { key: "deskripsi", header: "deskripsi" },
                 { key: "tujuan", header: "tujuan" },
             ]}
             data={data()}
             loading={loading()}
-            files={[
-                {
-                    label: "Draf Penelitian",
-                    icon: "download",
-                    class: "bg-red-500 text-white hover:bg-red-600",
-                    onClick: (row) => {
-                        route.download(row.file_draft_penelitian ?? "")
-                    }
-                },
-                {
-                    label: "Surat Permohonan Instansi",
-                    icon: "download",
-                    class: "bg-red-500 text-white hover:bg-red-600",
-                    onClick: (row) => {
-                        route.download(row.file_permohonan_instansi ?? "")
-                    }
-                },
-            ]}
+            // files={[
+            //     {
+            //         label: "Draf Penelitian",
+            //         icon: "download",
+            //         class: "bg-red-500 text-white hover:bg-red-600",
+            //         onClick: (row) => {
+            //             route.download(row.file_draft_penelitian ?? "")
+            //         }
+            //     },
+            //     {
+            //         label: "Surat Permohonan Instansi",
+            //         icon: "download",
+            //         class: "bg-red-500 text-white hover:bg-red-600",
+            //         onClick: (row) => {
+            //             route.download(row.file_permohonan_instansi ?? "")
+            //         }
+            //     },
+            // ]}
 
             actions={[
+                {
+                    label: "Lihat",
+                    icon: "search",
+                    class: "bg-blue-500 text-white hover:bg-blue-600",
+                    onClick: (row) => {
+                        setForm({ ...form(), id: row.id })
+                        setOpenDetail(true)
+                    },
+                },
                 {
                     label: "Approval",
                     icon: "approval",
@@ -210,6 +221,17 @@ export default function PenelitianApprovalData() {
                         Simpan
                     </button>
                 </div>
+            </div>
+        </Modal>
+
+        <Modal
+            open={openDetail()}
+            loading={false}
+            title="Detail"
+            onClose={() => setOpenDetail(false)}
+        >
+            <div class="max-h-[500px] overflow-y-auto ">
+                <PenelitianDetail id={form().id} />
             </div>
         </Modal>
     </div>;

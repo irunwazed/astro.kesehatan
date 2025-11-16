@@ -38,7 +38,7 @@ interface TableProps<T> {
 }
 
 export function Table<T>(props: TableProps<T>) {
-    console.log("props.files?.length", props.files?.length)
+    // console.log("props.files?.length", props.files?.length)
     return (
         <div class="relative w-full overflow-x-auto border border-gray-200 rounded-lg">
             <table class="w-full border-collapse bg-white text-left text-sm text-gray-700">

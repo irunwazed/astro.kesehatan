@@ -44,3 +44,37 @@ export function getTimeNow(): string {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${microseconds}+00`;
 }
+
+export const getTimeFromTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+
+  // buatkan agar ambil sudah berapa lama dari sekarang
+  const now = new Date();
+  const diff = now.getTime() - date.getTime(); // selisih dalam milidetik
+  const diffMinutes = Math.floor(diff / (1000 * 60));
+  const diffHours = Math.floor(diff / (1000 * 60 * 60));
+  const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) {
+    return `${diffDays} hari yang lalu`;
+  } else if (diffHours > 0) {
+    return `${diffHours} jam yang lalu`;
+  } else if (diffMinutes > 0) {
+    return `${diffMinutes} menit yang lalu`;
+  } else {
+    return `baru saja`;
+  }
+};
+
+export const convertTimeDB = (timestamp: string) => {
+  const date = new Date(timestamp);
+
+  const month = [
+    "januari", "Februari", "Maret", "April", "Mei", "Juni", "juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ]
+
+  if(month[date.getMonth()]){
+  return `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}`
+  }
+  return ""
+
+}

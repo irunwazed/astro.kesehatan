@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js"
 
 
 export enum StatusPenelitian {
@@ -146,6 +147,14 @@ export interface Penelitian {
     file_etik: string | null
 
     izin_etik: string,
+}
+
+export interface PenelitianDetail {
+    user: {
+        nama: string
+        email:string
+    }
+    penelitian: Penelitian
 }
 
 

@@ -87,6 +87,16 @@ export class UserRepository {
         else console.table(data)
     }
 
+    
+
+    async getProfileId(id:string) {
+        const { data, error } = await supabase.from('profiles').select('*').eq("id", id)
+        // if (error) console.error('Gagal ambil data:', error.message)
+        // else console.table(data)
+
+        return data
+    }
+
     async updateProfile(fullName: string, role: string) {
         const {
             data: { user },

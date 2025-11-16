@@ -24,13 +24,13 @@ export default function Modal(props: ModalProps) {
     return (
         <Show when={props.open || visible()}>
             <div
-                class={`fixed inset-0 flex items-center justify-center z-50
+                class={`fixed inset-0 flex items-center justify-center z-60
           transition-opacity duration-300
           ${props.open ? "opacity-100 bg-black/60" : "opacity-0 bg-black/0"}`}
                 onClick={props.onClose}
             >
                 <div
-                    class={`bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative mx-4
+                    class={`bg-white rounded-xl shadow-xl w-full max-w-6xl p-6 relative mx-4
             transform transition-all duration-300
             ${props.open ? "scale-100 translate-y-0" : "scale-95 translate-y-4"}`}
                     onClick={(e) => e.stopPropagation()}

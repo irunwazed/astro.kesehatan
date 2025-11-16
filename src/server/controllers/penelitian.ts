@@ -4,7 +4,7 @@ import { uuidv7 } from "../helpers/crypto";
 import type { FormPermohonanPenelitian, InsertPenelitianAwal, InsertPenelitianPerpanjang } from "../types/penelitian";
 import { supabase } from "../configs/db";
 import { UserRepository } from "../repositories/user.repository";
-import { StatusPenelitian } from "src/helpers/dto/penelitian";
+import { StatusPenelitian, type PenelitianDetail } from "src/helpers/dto/penelitian";
 
 
 const repository = new PenelitianRepository();
@@ -173,16 +173,16 @@ export class PenelitianController {
     try {
       const auth = await userRepository.getAuth(req)
       if (!auth) {
-        return new Response(  
+        return new Response(
           JSON.stringify({ message: 'Token tidak valid' }),
           { status: 401 }
         );
       }
       const role = auth.user_metadata.roles as string[]
 
-      console.log("auth", auth)
+      // console.log("auth", auth)
 
-      if(!role) {
+      if (!role) {
         return new Response(JSON.stringify({
           status: false,
           message: "Role tidak ditemukan",
@@ -197,7 +197,7 @@ export class PenelitianController {
       }), { status: 200 });
     } catch (error) {
       console.log("error", error)
-      return new Response(JSON.stringify({  
+      return new Response(JSON.stringify({
         status: false,
         message: error instanceof Error ? error.message : "Terjadi kesalahan",
       }), { status: 500 });
@@ -218,9 +218,28 @@ export class PenelitianController {
 
       const url = new URL(req.url);
       const id = url.searchParams.get('id');
-      console.log("id", id)
+      // console.log("id", id)
 
-      const result = await repository.getById(id ?? "")
+      const data = await repository.getById(id ?? "")
+      if (!data) {
+
+        return new Response(JSON.stringify({
+          status: true,
+          message: "Data tidak ditemukan",
+        }), { status: 404 });
+      }
+
+      const user = await userRepository.getProfileId(data.user_id)
+
+
+
+      const result: PenelitianDetail = {
+        user: {
+          nama: user![0].full_name,
+          email: ""
+        },
+        penelitian: data
+      }
 
       return new Response(JSON.stringify({
         status: true,
@@ -335,9 +354,9 @@ export class PenelitianController {
       }
 
       const { data, id } = await processFormDataPenelitianAwal(auth.id, formData);
-      console.log("id", id)
+      // console.log("id", id)
 
-      let result:any
+      let result: any
       if (id == "" || id == null) {
         result = await repository.create(data);
       } else {
@@ -491,7 +510,7 @@ export class PenelitianController {
       const file_etik = formData.get("file_etik") as File;
       const file_etik_path = await uploadFilePermohonan("file_etik" + "_" + uuidv7() + ".pdf", file_etik);
       data.file_etik = file_etik_path ?? ""
-      console.log("data", data)
+      // console.log("data", data)
       const result = await repository.approvalEtik(data.id, data.nomor, (data.status == StatusPenelitian.TerimaPenelitianEtik || data.status == StatusPenelitian.PublishPenelitian), data.alasan, data.file_etik);
 
       return new Response(JSON.stringify({

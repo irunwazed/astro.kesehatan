@@ -90,25 +90,25 @@ export class PenelitianRepository {
   }
 
 
-  async update(id:string, data: InsertPenelitianAwal) { // FormPermohonanPenelitian
+  async update(id: string, data: InsertPenelitianAwal) { // FormPermohonanPenelitian
 
     return await supabase.from('penelitian').update({
-        ...data,
-        user_id: data.user_id,
-        // nama: data.nama,
-        // tujuan: data.tujuan,
-        // deskripsi: data.deskripsi,
-        // variabel_lain: data.variabel_lain,
-        // jumlah_minimal_sampel: data.jumlah_minimal_sampel,
-        // waktu_awal_sample: data.waktu_awal_sample,
-        // waktu_akhir_sample: data.waktu_akhir_sample,
-        // pendanaan: data.pendanaan,
-        // sponsor: data.sponsor,
-        // file_permohonan_instansi: data.file_permohonan_instansi,
-        // file_draft_penelitian: data.file_draft_penelitian,
-        status: StatusPenelitian.Submit,
-        updated_at: getTimeNow(),
-      }).eq("id", id)
+      ...data,
+      user_id: data.user_id,
+      // nama: data.nama,
+      // tujuan: data.tujuan,
+      // deskripsi: data.deskripsi,
+      // variabel_lain: data.variabel_lain,
+      // jumlah_minimal_sampel: data.jumlah_minimal_sampel,
+      // waktu_awal_sample: data.waktu_awal_sample,
+      // waktu_akhir_sample: data.waktu_akhir_sample,
+      // pendanaan: data.pendanaan,
+      // sponsor: data.sponsor,
+      // file_permohonan_instansi: data.file_permohonan_instansi,
+      // file_draft_penelitian: data.file_draft_penelitian,
+      status: StatusPenelitian.Submit,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
   }
 
   async createPerpanjang(data: InsertPenelitianPerpanjang) { // FormPermohonanPenelitian
@@ -177,27 +177,66 @@ export class PenelitianRepository {
     ]).eq("id", data.id)
   }
 
-  async getNotifPenelitian(role:string): Promise<Penelitian[]> {
+  //   async getNotifPenelitian(role:string): Promise<Penelitian[]> {
 
-    let query = supabase.from('penelitian').select('*').order("updated_at", { ascending: false })
+  //     let query = supabase.from('penelitian').select('*').order("updated_at", { ascending: false })
 
+  //     if (role == USER.ADMIN_ETIK) {
+  //       query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
+  //     } else if (role == USER.ADMIN_VALIDASI) {
+  //       query = query.eq('status', StatusPenelitian.Submit)
+  //     } else if (role == USER.ADMIN) {
+  //       query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.Submit])
+  //     } else {
+  //       return []
+  //     }
+
+  //     let { data: penelitian, error } = await query
+  //     if (!penelitian || penelitian.length == 0) {
+  //       console.log("error ", error)
+  //       return []
+  //     }
+  //     return penelitian
+  //   }
+
+  async getNotifPenelitian(role: string): Promise<Penelitian[]> {
+    // Menghitung tanggal 7 hari yang lalu
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // Mengurangi 7 hari dari tanggal hari ini
+    const sevenDaysAgoISOString = sevenDaysAgo.toISOString(); // Mengubahnya menjadi format ISO string
+
+    // Membangun query dasar
+    let query = supabase.from('penelitian').select('*').order("updated_at", { ascending: false });
+
+    console.log("sevenDaysAgoISOString", sevenDaysAgoISOString); // Debug log untuk memeriksa tanggal
+
+    // Menambahkan filter untuk 'updated_at' yang lebih kecil dari 7 hari yang lalu
+    query = query.lt('updated_at', sevenDaysAgoISOString); // Mengambil data yang lebih lama dari 7 hari
+
+    // Menambahkan kondisi berdasarkan role
     if (role == USER.ADMIN_ETIK) {
-      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
+      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan]);
     } else if (role == USER.ADMIN_VALIDASI) {
-      query = query.eq('status', StatusPenelitian.Submit)
+      query = query.eq('status', StatusPenelitian.Submit);
     } else if (role == USER.ADMIN) {
-      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.Submit])
+      query = query.in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.Submit]);
     } else {
-      return []
+      return [];
     }
 
+    // Menjalankan query dan menangani hasilnya
+    const { data: penelitian, error } = await query;
+    if (error) {
+      console.log("Error fetching penelitian data:", error);
+      return [];
+    }
 
-    let { data: penelitian, error } = await query
     if (!penelitian || penelitian.length == 0) {
-      console.log("error ", error)
-      return []
+      console.log("No penelitian data found");
+      return [];
     }
-    return penelitian
+
+    return penelitian;
   }
 
 }

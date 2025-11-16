@@ -4,7 +4,7 @@ import MainLayout from "../../layouts/MainLayout.astro";
 import { USER } from "src/helpers/lib/constant";
 
 const token = Astro.cookies.get("token")?.value;
-console.log("Token:", token);
+// console.log("Token:", token);
 const user = getUserFromToken(token || "");
 ---
 
