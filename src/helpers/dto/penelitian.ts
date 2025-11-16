@@ -43,6 +43,16 @@ export const getStatusPenelitianData = (status: number) => {
 }
 
 
+export const getStatusPendanaanNama = (status: string) => {
+    if (status == "SPONSOR_OBSERVASIONAL") return "[SPONSOR] Penelitian Observasional (Prospektif)"
+    if (status == "SPONSOR_UJI_KLINIS") return "[SPONSOR] Uji Klinis"
+    if (status == "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF") return "[NON SPONSOR] Penelitian Observasional (Prospektif)"
+    if (status == "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF") return "[NON SPONSOR] Penelitian Observasional (Retrospektif)"
+    if (status == "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI") return "[NON SPONSOR] Uji Klinis - Farmakoterapi"
+    if (status == "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI") return "[NON SPONSOR] Uji Klinis - Non Farmakoterapi"
+    return ""
+}
+
 export type GroupResponse = {
     id: string
     nama: string

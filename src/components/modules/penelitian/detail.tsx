@@ -1,6 +1,6 @@
 import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian";
-import { getStatusPenelitianData, type PenelitianDetail } from "src/helpers/dto/penelitian";
+import { getStatusPendanaanNama, getStatusPenelitianData, type PenelitianDetail } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 import { convertTimeDB, getTimeFromTimestamp } from "src/helpers/lib/time";
 
@@ -122,6 +122,17 @@ export default function PenelitianDetail({ id }: { id: string }) {
                         <label class="block text-sm font-medium text-gray-600">Check Mahasiswa</label>
                         <p class="mt-1 text-gray-800">{data()?.penelitian.check_mahasiswa}</p>
                     </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-600">Mahasiswa Proposal</label>
+                        <p class="mt-1 text-gray-800">{data()?.penelitian.mahasiswa_proposal}</p>
+                    </div>
+
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-600">Jenis</label>
+                        <p class="mt-1 text-gray-800">{getStatusPendanaanNama(data()?.penelitian.jenis ?? "")}</p>
+                    </div>
                     <div class="space-y-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[500px] overflow-auto">
                         {/* File Permohonan Instansi */}
                         <Show when={data()?.penelitian.file_permohonan_instansi}>
@@ -143,19 +154,6 @@ export default function PenelitianDetail({ id }: { id: string }) {
                                 <p
                                     class="mt-1 text-blue-600 hover:underline cursor-pointer"
                                     onClick={() => route.download(data()?.penelitian.file_draft_penelitian ?? "")}
-                                >
-                                    Download
-                                </p>
-                            </div>
-                        </Show>
-
-                        {/* Mahasiswa Proposal */}
-                        <Show when={data()?.penelitian.mahasiswa_proposal}>
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-600">Mahasiswa Proposal</label>
-                                <p
-                                    class="mt-1 text-blue-600 hover:underline cursor-pointer"
-                                    onClick={() => route.download(data()?.penelitian.mahasiswa_proposal ?? "")}
                                 >
                                     Download
                                 </p>
