@@ -57,7 +57,7 @@ export default function Form1Data() {
         setLoading(true);
         const data = await PenelitianService.getPenelitianById(id())
         if (data.data) {
-            setData(data.data);
+            setData(data.data.penelitian);
             setForm({
                 ...form(),
                 check_mahasiswa: data.data.penelitian.check_mahasiswa,

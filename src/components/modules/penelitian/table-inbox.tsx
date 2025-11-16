@@ -14,6 +14,7 @@ import PenelitianDetail from "./detail";
 
 type FormPenelitian = {
     id: string,
+    statusNow: number
     status: number
     jenis: string
     alasan: string
@@ -24,6 +25,7 @@ export default function PenelitianApprovalData() {
     const dataForm: FormPenelitian = {
         id: "",
         jenis: "",
+        statusNow: 0,
         status: 0,
         alasan: ""
     }
@@ -56,7 +58,7 @@ export default function PenelitianApprovalData() {
 
 
     const setApproval = async (row: Penelitian) => {
-        setForm({ ...form(), id: row.id })
+        setForm({ ...form(), id: row.id, statusNow: row.status })
         setOpen(true)
     }
 
@@ -164,16 +166,14 @@ export default function PenelitianApprovalData() {
 
             <div class="flex flex-col gap-4 mt-4">
 
-
-
                 <div>
                     <FormLabel for="status" text="Status" />
                     <Select options={[
                         { label: "Pilih Status", value: "0" },
-                        { label: "Tolak", value: StatusPenelitian.TolakPenelitian.toString() },
-                        { label: "Terima", value: StatusPenelitian.TerimaPenelitian.toString() }
+                        { label: "Tolak", value: form().statusNow == StatusPenelitian.Submit ? StatusPenelitian.TolakPenelitian.toString() : StatusPenelitian.TolakPenelitianEtik.toString() },
+                        { label: "Terima", value: form().statusNow == StatusPenelitian.Submit ? StatusPenelitian.TerimaPenelitian.toString() : StatusPenelitian.TerimaPenelitianEtik.toString() }
                     ]}
-                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitian ? "Terima kasih, data sudah kami verifikasi. Silahkan lanjut icon \"Input Berkas Penelitian\"" : "Mohon maaf, kami masih butuh informasi tambahan, Silahkan hubungikami di 088219942081" })} />
+                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: (parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitian || parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitianEtik) ? "Terima kasih, data sudah kami verifikasi. Silahkan lanjut icon \"Input Berkas Penelitian\"" : "Mohon maaf, kami masih butuh informasi tambahan, Silahkan hubungikami di 088219942081" })} />
                 </div>
 
                 <Show when={form().status > 0}>

@@ -103,12 +103,14 @@ export default function PenelitianDetail({ id }: { id: string }) {
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Pendanaan</label>
-                            <p class="mt-1 text-gray-800">{data()?.penelitian.pendanaan}</p>
+                            <p class="mt-1 text-gray-800">{data()?.penelitian.pendanaan == "1"? "Mandiri":"Sponsor"}</p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-600">Sponsor</label>
-                            <p class="mt-1 text-gray-800">{data()?.penelitian.sponsor}</p>
-                        </div>
+                        <Show when={data()?.penelitian.pendanaan == "2"}>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Sponsor</label>
+                                <p class="mt-1 text-gray-800">{data()?.penelitian.sponsor}</p>
+                            </div>
+                        </Show>
                     </div>
 
                     <div class="mb-6">

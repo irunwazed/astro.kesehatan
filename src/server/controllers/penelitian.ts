@@ -469,7 +469,7 @@ export class PenelitianController {
     try {
       const { status, jenis, id, alasan } = await request.json();
 
-      const result = await repository.approval(id, jenis, status as number == StatusPenelitian.TerimaPenelitian, alasan);
+      const result = await repository.approval(id, jenis, status, alasan);
 
       return new Response(JSON.stringify({
         status: true,

@@ -62,7 +62,7 @@ export default function FormPenelitianAwal() {
         setLoading(true);
         const data = await PenelitianService.getPenelitianById(id())
         if (data.data) {
-            setData(data.data);
+            setData(data.data.penelitian);
             setForm({
                 ...form(),
                 nama: data.data.penelitian.nama,

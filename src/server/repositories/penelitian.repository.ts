@@ -43,7 +43,8 @@ export class PenelitianRepository {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .eq("status", StatusPenelitian.Submit)
+      .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
+      // .eq("status", StatusPenelitian.Submit)
 
     if (!penelitian) {
       console.log("error ", error)
@@ -57,7 +58,7 @@ export class PenelitianRepository {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .in('status', [StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
+      .in('status', [StatusPenelitian.TerimaPenelitianEtik])
 
     if (!penelitian) {
       console.log("error ", error)
@@ -111,6 +112,13 @@ export class PenelitianRepository {
     }).eq("id", id)
   }
 
+  async updateStatus(id: string, status: number) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update({
+      status: status,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
+  }
+
   async createPerpanjang(data: InsertPenelitianPerpanjang) { // FormPermohonanPenelitian
 
     await supabase.from('penelitian').update(
@@ -132,11 +140,11 @@ export class PenelitianRepository {
     ])
   }
 
-  async approval(id: string, jenis: string, status: boolean, alasan: string) { // FormPermohonanPenelitian
+  async approval(id: string, jenis: string, status: number, alasan: string) { // FormPermohonanPenelitian
     return await supabase.from('penelitian').update({
       // jenis: jenis,
       alasan: alasan,
-      status: status ? StatusPenelitian.TerimaPenelitian : StatusPenelitian.TolakPenelitian,
+      status: status,
       updated_at: getTimeNow(),
     }).eq("id", id)
   }
