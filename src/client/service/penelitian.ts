@@ -29,6 +29,7 @@ export const PenelitianService = {
   getPenelitianById: (id:string) => GET<PenelitianDetail|null>({ url: "/api/penelitian/data?id="+id }),
   getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
   approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),
+  izinPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/izin", formData),
   
   updateStatusPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/update-status", body: { id, status }}),
 

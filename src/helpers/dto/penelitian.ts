@@ -16,7 +16,8 @@ export enum StatusPenelitian {
     SiapApprovalAmandemen = 603,
     Amandemen = 604,
     SiapPublish = 901,
-    PublishPenelitian = 902,
+    EthicalApproval = 902,
+    Diizinkan = 903,
 }
 
 export const getStatusPenelitianNama = (status: number) => {
@@ -36,7 +37,8 @@ export const getStatusPenelitianNama = (status: number) => {
     if (status == 603) return "Siap Approval Amandemen"
     if (status == 604) return "Amandemen"
     if (status == 901) return "Siap Publish Penelitian"
-    if (status == 902) return "Publish Penelitian"
+    if (status == 902) return "Ethical Approval"
+    if (status == 903) return "Penelitian Diizinkan"
     return ""
 }
 
@@ -57,7 +59,8 @@ export const getStatusCalonPenelitianNama = (status: number) => {
     if (status == 603) return "Proses Amandemen"
     if (status == 604) return "Amandemen"
     if (status == 901) return "Proses Verifikasi Publish"
-    if (status == 902) return "Publish Penelitian"
+    if (status == 902) return "Ethical Approval"
+    if (status == 903) return "Penelitian Diizinkan"
     return ""
 }
 
@@ -79,6 +82,7 @@ export const getStatusPenelitianData = (status: number) => {
     if (status == 604) return { name: getStatusPenelitianNama(604), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 901) return { name: getStatusPenelitianNama(901), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 902) return { name: getStatusPenelitianNama(902), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 903) return { name: getStatusPenelitianNama(903), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     return { name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
 }
 

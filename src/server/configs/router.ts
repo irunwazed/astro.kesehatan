@@ -33,6 +33,7 @@ routes.set('GET:/get/komite-etik', penelitan.getKomiteEtik);
 
 routes.set('GET:/penelitian/list', penelitan.getPenelitianApproval);
 routes.set('POST:/penelitian/approval', penelitan.approvalPenelitian);
+routes.set('POST:/penelitian/izin', penelitan.izinPenelitian);
 
 routes.set('GET:/penelitian/etik', penelitan.getPenelitianEtik);
 routes.set('POST:/penelitian/etik/approval', penelitan.approvalEtikPenelitian);

@@ -139,7 +139,7 @@ export default function PenelitianData() {
                     onClick: (row) => {
                         route.push("/app/penelitian/perpanjang?id=" + row.id)
                     },
-                    hidden: (row) => row.status != StatusPenelitian.PublishPenelitian,
+                    hidden: (row) => row.status != StatusPenelitian.Diizinkan,
                     // disabled: (row) => row.status != StatusPenelitian.PublishPenelitian,     // ❌ user id=2 tombol delete disembunyikan
                 },
                 {

@@ -84,7 +84,7 @@ export class PenelitianRepository {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.SiapPublish, StatusPenelitian.UploadAmandemen])
+      .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.SiapPublish, StatusPenelitian.UploadAmandemen, StatusPenelitian.EthicalApproval])
 
     if (!penelitian) {
       console.log("error ", error)
@@ -217,6 +217,14 @@ export class PenelitianRepository {
     console.log("update", id, status)
     return await supabase.from('penelitian').update({
       status: status,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
+  }
+
+  async suratIzin(id: string, file_surat_izin:string) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update({
+      file_surat_izin: file_surat_izin,
+      status: StatusPenelitian.Diizinkan,
       updated_at: getTimeNow(),
     }).eq("id", id)
   }

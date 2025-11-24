@@ -18,6 +18,7 @@ type FormPenelitian = {
     status: number
     jenis: string
     alasan: string
+    file_surat_izin:string|File
 }
 
 export default function PenelitianApprovalData() {
@@ -27,7 +28,8 @@ export default function PenelitianApprovalData() {
         jenis: "",
         statusNow: 0,
         status: 0,
-        alasan: ""
+        alasan: "",
+        file_surat_izin:""
     }
 
     const [data, setData] = createSignal<Penelitian[]>([]);
@@ -36,6 +38,7 @@ export default function PenelitianApprovalData() {
     const [openDetail, setOpenDetail] = createSignal(false)
     const [loadingSave, setLoadingSave] = createSignal(false)
     const [form, setForm] = createSignal(dataForm)
+    const [openIzin, setOpenIzin] = createSignal(false)
 
     const getData = async () => {
         setLoading(true);
@@ -97,6 +100,36 @@ export default function PenelitianApprovalData() {
         setLoadingSave(false)
     }
 
+    const handleIzinSave = async () => {
+
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('id', form().id);
+        formData.append('file_surat_izin', form().file_surat_izin);
+
+
+        const maxFileSize = 5 * 1024 * 1024; // 5MB
+        formData.forEach((value, key) => {
+            if (value instanceof File && value.size > maxFileSize) {
+                showAlert({
+                    title: "Validasi Error",
+                    message: "File terlalu besar, maximal 5 mb",
+                    icon: "error"
+                });
+                return;
+                // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
+            }
+        });
+
+
+        setLoadingSave(true)
+        const result = await PenelitianService.izinPenelitian(formData);
+        getData()
+        setOpenIzin(false)
+        setLoadingSave(false)
+    }
+
     return <div class="p-4">
         <Table
             columns={[
@@ -136,12 +169,12 @@ export default function PenelitianApprovalData() {
                     hidden: (row) => !(row.status === StatusPenelitian.PenelitianUpload || row.status === StatusPenelitian.Submit)
                 },
                 {
-                    label: "Publish",
+                    label: "Ethical Approval",
                     icon: "approval",
                     class: "bg-green-500 text-white hover:bg-green-600",
                     onClick: async (row) => {
                         setLoading(true)
-                        await PenelitianService.updateStatusPenelitian(row.id, StatusPenelitian.PublishPenelitian)
+                        await PenelitianService.updateStatusPenelitian(row.id, StatusPenelitian.EthicalApproval)
                         setLoading(false)
                         getData()
                     },
@@ -158,6 +191,17 @@ export default function PenelitianApprovalData() {
                         getData()
                     },
                     hidden: (row) => row.status !== StatusPenelitian.UploadAmandemen
+                },
+                {
+                    label: "Surat Izin",
+                    icon: "approval",
+                    class: "bg-green-500 text-white hover:bg-green-600",
+                    onClick: (row) => {
+                        
+                        setForm({ ...form(), id: row.id })
+                        setOpenIzin(true)
+                    },
+                    hidden: (row) => !(row.status === StatusPenelitian.EthicalApproval)
                 },
 
                 
@@ -206,6 +250,45 @@ export default function PenelitianApprovalData() {
                     <button
                         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                         onClick={handleSave}
+                        disabled={loadingSave()}
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal
+            open={openIzin()}
+            loading={loadingSave()}
+            title="Tambah Data"
+            onClose={() => !loadingSave() && setOpenIzin(false)}
+        >
+
+            <div class="flex flex-col gap-4 mt-4">
+
+                <div>
+                    <FormLabel for="file_surat_izin" text="File Surat Izin" />
+                    <Input
+                        id="file_surat_izin"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => setForm({ ...form(), file_surat_izin: e.currentTarget.files?.[0] as File })}
+                    />
+                </div>
+
+                <hr class="my-2 border-gray-200" />
+                <div class="flex justify-end gap-2">
+                    <button
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        onClick={() => setOpen(false)}
+                        disabled={loadingSave()}
+                    >
+                        Batal
+                    </button>
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={handleIzinSave}
                         disabled={loadingSave()}
                     >
                         Simpan

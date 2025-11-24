@@ -589,6 +589,39 @@ export class PenelitianController {
     }
   }
 
+  async izinPenelitian(request: Request) {
+    try {
+      const formData = await request.formData();
+
+
+      const data: {
+        id: string,
+        file_surat_izin: string
+      } = {
+        id: formData.get('id') as string,
+        file_surat_izin: "",
+      }
+      const file_surat_izin = formData.get("file_surat_izin") as File;
+      const file_surat_izin_path = await uploadFilePermohonan("file_surat_izin" + "_" + uuidv7() + ".pdf", file_surat_izin);
+      data.file_surat_izin = file_surat_izin_path ?? ""
+
+      const result = await repository.suratIzin(data.id, data.file_surat_izin);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
   async approvalEtikPenelitian(request: Request) {
     try {
       // const { status, id, nomor, alasan } = await request.json();
