@@ -115,24 +115,6 @@ export default function PenelitianApprovalData() {
             ]}
             data={data()}
             loading={loading()}
-            // files={[
-            //     {
-            //         label: "Draf Penelitian",
-            //         icon: "download",
-            //         class: "bg-red-500 text-white hover:bg-red-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_draft_penelitian ?? "")
-            //         }
-            //     },
-            //     {
-            //         label: "Surat Permohonan Instansi",
-            //         icon: "download",
-            //         class: "bg-red-500 text-white hover:bg-red-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_permohonan_instansi ?? "")
-            //         }
-            //     },
-            // ]}
 
             actions={[
                 {
@@ -151,9 +133,34 @@ export default function PenelitianApprovalData() {
                     onClick: (row) => {
                         setApproval(row)
                     },
-                    // disabled: (row) => row.status != "DRAFT"
-                    // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
+                    hidden: (row) => !(row.status === StatusPenelitian.PenelitianUpload || row.status === StatusPenelitian.Submit)
                 },
+                {
+                    label: "Publish",
+                    icon: "approval",
+                    class: "bg-green-500 text-white hover:bg-green-600",
+                    onClick: async (row) => {
+                        setLoading(true)
+                        await PenelitianService.updateStatusPenelitian(row.id, StatusPenelitian.PublishPenelitian)
+                        setLoading(false)
+                        getData()
+                    },
+                    hidden: (row) => row.status !== StatusPenelitian.SiapPublish
+                },
+                {
+                    label: "Amandemen",
+                    icon: "approval",
+                    class: "bg-green-500 text-white hover:bg-green-600",
+                    onClick: async (row) => {
+                        setLoading(true)
+                        await PenelitianService.updateStatusPenelitian(row.id, StatusPenelitian.SiapApprovalAmandemen)
+                        setLoading(false)
+                        getData()
+                    },
+                    hidden: (row) => row.status !== StatusPenelitian.UploadAmandemen
+                },
+
+                
             ]}
         />
 
@@ -173,7 +180,7 @@ export default function PenelitianApprovalData() {
                         { label: "Tolak", value: form().statusNow == StatusPenelitian.Submit ? StatusPenelitian.TolakPenelitian.toString() : StatusPenelitian.TolakPenelitianEtik.toString() },
                         { label: "Terima", value: form().statusNow == StatusPenelitian.Submit ? StatusPenelitian.TerimaPenelitian.toString() : StatusPenelitian.TerimaPenelitianEtik.toString() }
                     ]}
-                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: (parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitian || parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitianEtik) ? "Terima kasih, data sudah kami verifikasi. Silahkan lanjut icon \"Input Berkas Penelitian\"" : "Mohon maaf, kami masih butuh informasi tambahan, Silahkan hubungikami di 088219942081" })} />
+                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value), alasan: (parseInt(e.currentTarget.value) == StatusPenelitian.TerimaPenelitian) ? "Terima kasih, data sudah kami verifikasi. Silahkan lanjut icon \"Input Berkas Penelitian\"" : (StatusPenelitian.TerimaPenelitianEtik == parseInt(e.currentTarget.value) ?"":"Mohon maaf, kami masih butuh informasi tambahan, Silahkan hubungikami di 088219942081") })} />
                 </div>
 
                 <Show when={form().status > 0}>
@@ -186,23 +193,6 @@ export default function PenelitianApprovalData() {
                         />
                     </div>
                 </Show>
-
-                {/* <Show when={form().status == StatusPenelitian.TerimaPenelitian}>
-                    <div>
-                        <FormLabel for="jenis" text="Jenis" />
-                        <Select options={[
-                            { label: "Pilih Jenis", value: "" },
-                            { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
-                            { label: "[SPONSOR] Uji Klinis", value: "SPONSOR_UJI_KLINIS" },
-                            { label: "[NON SPONSOR] Penelitian Observasional (Prospektif)", value: "NON_SPONSOR_OBSERVASIONAL_PROSPEKTIF" },
-                            { label: "[NON SPONSOR] Penelitian Observasional (Retrospektif)", value: "NON_SPONSOR_OBSERVASIONAL_RETROSPEKTIF" },
-                            { label: "[NON SPONSOR] Uji Klinis - Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_FARMAKOTERAPI" },
-                            { label: "[NON SPONSOR] Uji Klinis - Non Farmakoterapi", value: "NON_SPONSOR_UJI_KLINIS_NON_FARMAKOTERAPI" },
-                        ]}
-                            onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
-
-                    </div>
-                </Show> */}
 
                 <hr class="my-2 border-gray-200" />
                 <div class="flex justify-end gap-2">

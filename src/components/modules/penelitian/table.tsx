@@ -4,18 +4,26 @@ import Modal from "@solid-ui/Modal";
 import { Table } from "@solid-ui/Table";
 import { createSignal, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian"
-import { getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
+import { getStatusCalonPenelitianNama, getStatusPenelitianData, getStatusPenelitianNama, StatusPenelitian, type Penelitian } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
 import PenelitianDetail from "./detail";
+import FormLabel from "@solid-ui/FormLabel";
+import Input from "@solid-ui/Input";
 
 
 export default function PenelitianData() {
 
-
+    const dataForm: { id: string, file_amandemen: string | File } = {
+        id: "",
+        file_amandemen: "",
+    }
     const [data, setData] = createSignal<Penelitian[]>([]);
     const [loading, setLoading] = createSignal(false);
     const [openDetail, setOpenDetail] = createSignal(false)
     const [select, setSelect] = createSignal("")
+    const [open, setOpen] = createSignal(false)
+    const [loadingSave, setLoadingSave] = createSignal(false)
+    const [form, setForm] = createSignal(dataForm)
 
     const getData = async () => {
         setLoading(true);
@@ -36,6 +44,36 @@ export default function PenelitianData() {
         getData()
     })
 
+
+    const handleSave = async () => {
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('id', form().id);
+        formData.append('file_amandemen', form().file_amandemen);
+
+
+        const maxFileSize = 5 * 1024 * 1024; // 5MB
+        formData.forEach((value, key) => {
+            if (value instanceof File && value.size > maxFileSize) {
+                showAlert({
+                    title: "Validasi Error",
+                    message: "File terlalu besar, maximal 5 mb",
+                    icon: "error"
+                });
+                return;
+                // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
+            }
+        });
+
+
+        setLoadingSave(true)
+        const result = await PenelitianService.uploadAmandemen(formData);
+        getData()
+        setOpen(false)
+        setLoadingSave(false)
+    }
+
     return <div class="p-4">
 
         <div class="flex justify-between mb-6">
@@ -49,9 +87,9 @@ export default function PenelitianData() {
                 {
                     key: "status_nama", header: "Status", render: (row) => {
                         return <div>
-                            <div class={getStatusPenelitianData(row.status).class}>{getStatusPenelitianData(row.status).name}</div>
+                            <div class={getStatusPenelitianData(row.status).class}>{getStatusCalonPenelitianNama(row.status)}</div>
                             <Show when={row.alasan}>
-                                <span class="align-middle">({row.alasan})</span>
+                                <span class="align-middle">({row.telaah ?? row.alasan})</span>
                             </Show>
                         </div>
                     },
@@ -63,184 +101,6 @@ export default function PenelitianData() {
             ]}
             data={data()}
             loading={loading()}
-            // files={[
-            //     {
-            //         label: "Draf Penelitian",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_draft_penelitian ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_draft_penelitian == "" || row.file_draft_penelitian == null
-            //         }
-            //     },
-            //     {
-            //         label: "Surat Permohonan Instansi",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_permohonan_instansi ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_permohonan_instansi == "" || row.file_permohonan_instansi == null
-            //         }
-            //     },
-            //     {
-            //         label: "Surat Izin Penelitian",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_surat_izin_penelitian ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_surat_izin_penelitian == "" || row.file_surat_izin_penelitian == null
-            //         }
-            //     },
-            //     {
-            //         label: "Formulir Telaah Penelitian",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_formulir_telaah_penelitian ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_formulir_telaah_penelitian == "" || row.file_formulir_telaah_penelitian == null
-            //         }
-            //     },
-            //     {
-            //         label: "Formulir Ketersediaan Penelitian",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_formulir_ketersediaan_penelitian ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_formulir_ketersediaan_penelitian == "" || row.file_formulir_ketersediaan_penelitian == null
-            //         }
-            //     },
-            //     {
-            //         label: "Informasi Calon Subjek",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_informasi_calon_subjek ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_informasi_calon_subjek == "" || row.file_informasi_calon_subjek == null
-            //         }
-            //     },
-            //     {
-            //         label: "Pernyataan Konflik",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_pernyataan_konflik ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_pernyataan_konflik == "" || row.file_pernyataan_konflik == null
-            //         }
-            //     },
-            //     {
-            //         label: "Proposal Penelitian",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_proposal_penelitian ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_proposal_penelitian == "" || row.file_proposal_penelitian == null
-            //         }
-            //     },
-            //     {
-            //         label: "Kaji Etik",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_surat_kaji_etik ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_surat_kaji_etik == "" || row.file_surat_kaji_etik == null
-            //         }
-            //     },
-            //     {
-            //         label: "CV Peneliti",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_cv_peneliti ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_cv_peneliti == "" || row.file_cv_peneliti == null
-            //         }
-            //     },
-            //     {
-            //         label: "CV Tim Peneliti",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_cv_tim_peneliti ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_cv_tim_peneliti == "" || row.file_cv_tim_peneliti == null
-            //         }
-            //     },
-            //     {
-            //         label: "Persetujuan",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_persetujuan ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_persetujuan == "" || row.file_persetujuan == null
-            //         }
-            //     },
-            //     {
-            //         label: "Kuesioner",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_kuesioner ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_kuesioner == "" || row.file_kuesioner == null
-            //         }
-            //     },
-            //     {
-            //         label: "Daftar Pustaka",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_daftar_pustaka ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_daftar_pustaka == "" || row.file_daftar_pustaka == null
-            //         }
-            //     },
-            //     {
-            //         label: "Bukti Transfer",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_bukti_transfer ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_bukti_transfer == "" || row.file_bukti_transfer == null
-            //         }
-            //     },
-            //     {
-            //         label: "File Etik",
-            //         icon: "download",
-            //         class: "bg-orange-500 text-white hover:bg-orange-600",
-            //         onClick: (row) => {
-            //             route.download(row.file_etik ?? "")
-            //         },
-            //         hidden: (row) => {
-            //             return row.file_etik == "" || row.file_etik == null
-            //         }
-            //     },
-            // ]}
             actions={[
                 {
                     label: "Lihat",
@@ -282,9 +142,60 @@ export default function PenelitianData() {
                     hidden: (row) => row.status != StatusPenelitian.PublishPenelitian,
                     // disabled: (row) => row.status != StatusPenelitian.PublishPenelitian,     // ❌ user id=2 tombol delete disembunyikan
                 },
+                {
+                    label: "Ajukan Amandemen",
+                    icon: "update",
+                    class: "bg-red-500 text-white hover:bg-red-600",
+                    onClick: (row) => {
+                        setForm({ ...form(), id: row.id })
+                        setOpen(true)
+                    },
+                    hidden: (row) => row.status != StatusPenelitian.SiapAmandemen,
+                    // disabled: (row) => row.status != StatusPenelitian.PublishPenelitian,     // ❌ user id=2 tombol delete disembunyikan
+                },
             ]}
         />
 
+
+        <Modal
+            open={open()}
+            loading={loadingSave()}
+            title="Tambah Data"
+            onClose={() => !loadingSave() && setOpen(false)}
+        >
+
+            <div class="flex flex-col gap-4 mt-4">
+
+
+            <div>
+                <FormLabel for="file_amandemen" text="File Amandemen" required={true} />
+                <Input
+                    id="file_amandemen"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => setForm({ ...form(), file_amandemen: e.currentTarget.files?.[0] as File })}
+                />
+            </div>
+
+                <hr class="my-2 border-gray-200" />
+                <div class="flex justify-end gap-2">
+                    <button
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        onClick={() => setOpen(false)}
+                        disabled={loadingSave()}
+                    >
+                        Batal
+                    </button>
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={handleSave}
+                        disabled={loadingSave()}
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
         <Modal
             open={openDetail()}
@@ -293,7 +204,7 @@ export default function PenelitianData() {
             onClose={() => setOpenDetail(false)}
         >
             <div class="max-h-[500px] overflow-y-auto ">
-                <PenelitianDetail  id={select()} />
+                <PenelitianDetail id={select()} />
             </div>
         </Modal>
     </div>;

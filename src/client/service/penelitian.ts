@@ -29,9 +29,14 @@ export const PenelitianService = {
   getPenelitianById: (id:string) => GET<PenelitianDetail|null>({ url: "/api/penelitian/data?id="+id }),
   getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
   approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),
+  
+  updateStatusPenelitian: (id:string, status:StatusPenelitian) => POST<{message:string}>({url: "/api/penelitian/update-status", body: { id, status }}),
+
+  uploadAmandemen: (formData: FormData) => HTTPUpload("/api/penelitian/amandemen", formData),
 
   getPenelitianEtik: () => GET<Penelitian[]>({ url: "/api/penelitian/etik" }),
   approvalEtikPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/etik/approval", formData),
+  telaahPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/etik/telaah", formData),
 
   getPenelitianTelaah: () => GET<Penelitian[]>({ url: "/api/penelitian/telaah" }),
   approvalTelaahPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/telaah/approval", formData),

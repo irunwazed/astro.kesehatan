@@ -84,8 +84,7 @@ export class PenelitianRepository {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
-    // .eq("status", StatusPenelitian.Submit)
+      .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan, StatusPenelitian.SiapPublish, StatusPenelitian.UploadAmandemen])
 
     if (!penelitian) {
       console.log("error ", error)
@@ -94,12 +93,11 @@ export class PenelitianRepository {
     return penelitian
   }
 
-
   async getReadyEtik(): Promise<Penelitian[]> {
     let { data: penelitian, error } = await supabase
       .from('penelitian')
       .select('*')
-      .in('status', [StatusPenelitian.TerimaPenelitianEtik])
+      .in('status', [StatusPenelitian.TerimaPenelitianEtik, StatusPenelitian.SudahTelaah, StatusPenelitian.SiapApprovalAmandemen])
 
     if (!penelitian) {
       console.log("error ", error)
@@ -184,13 +182,6 @@ export class PenelitianRepository {
     }).eq("id", id)
   }
 
-  async updateStatus(id: string, status: number) { // FormPermohonanPenelitian
-    return await supabase.from('penelitian').update({
-      status: status,
-      updated_at: getTimeNow(),
-    }).eq("id", id)
-  }
-
   async createPerpanjang(data: InsertPenelitianPerpanjang) { // FormPermohonanPenelitian
 
     await supabase.from('penelitian').update(
@@ -210,6 +201,24 @@ export class PenelitianRepository {
         bahasa: data.bahasa
       }
     ])
+  }
+  
+  async uploadAmandemen(id: string, file_amandemen:string) { // FormPermohonanPenelitian
+    return await supabase.from('penelitian').update({
+      // jenis: jenis,
+      file_amandemen: file_amandemen,
+      status: StatusPenelitian.UploadAmandemen,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
+  }
+
+  
+  async updateStatus(id: string, status: StatusPenelitian) { 
+    console.log("update", id, status)
+    return await supabase.from('penelitian').update({
+      status: status,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
   }
 
   async approval(id: string, jenis: string, status: number, alasan: string) { // FormPermohonanPenelitian
@@ -232,6 +241,23 @@ export class PenelitianRepository {
     }).eq("id", id)
   }
 
+  
+
+  async telaahEtik(id: string, telaah:string, nomor: string, alasan: string, file_etik: string) { // FormPermohonanPenelitian
+    let update:any = {
+      nomor: nomor,
+      alasan: alasan,
+      telaah: telaah,
+      file_etik: file_etik,
+      status: StatusPenelitian.SiapAmandemen,
+      updated_at: getTimeNow(),
+    }
+    if(telaah.toLowerCase() == "Disetujui".toLowerCase()){
+      update.status = StatusPenelitian.SiapPublish
+    }
+    return await supabase.from('penelitian').update(update).eq("id", id)
+  }
+
   async approvalTelaah(user_id: string, id: string, telaah: string, note: string) {
 
 
@@ -240,23 +266,31 @@ export class PenelitianRepository {
       .select('*')
       .eq("id", id)
 
-    console.log("penelitian", penelitian?.length)
     const telaahData: KomiteEtikTelaah[] = []
+    let isAll = true
     penelitian?.map((p) => {
       p?.komite_etik_approval?.map((ep: KomiteEtikTelaah) => {
         if (ep.id == user_id && p.id == id) {
           ep.telaah = telaah
           ep.note = note
-          telaahData.push(ep)
+        }
+        telaahData.push(ep)
+
+        if(ep.telaah == ""){
+          isAll = false
         }
       })
     })
 
-    return await supabase.from('penelitian').update({
+    let update:any = {
       komite_etik_approval: telaahData,
-      status: StatusPenelitian.SudahTelaah,
       updated_at: getTimeNow(),
-    }).eq("id", id)
+    }
+    if(isAll){
+      update.status = StatusPenelitian.SudahTelaah
+    }
+
+    return await supabase.from('penelitian').update(update).eq("id", id)
   }
 
   async insertPenelitianBerkas(data: any) { // FormPermohonanPenelitian

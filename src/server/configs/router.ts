@@ -23,6 +23,11 @@ routes.set('POST:/penelitian', penelitan.insertPenelitianBerkas);
 routes.set('POST:/penelitian-awal', penelitan.insertPenelitian);
 routes.set('POST:/penelitian-perpanjang', penelitan.insertPenelitianPerpanjang);
 
+
+routes.set('POST:/penelitian/update-status', penelitan.updateStatusPenelitian);
+
+routes.set('POST:/penelitian/amandemen', penelitan.uploadAmandemen);
+
 // getKomiteEtik
 routes.set('GET:/get/komite-etik', penelitan.getKomiteEtik);
 
@@ -31,6 +36,7 @@ routes.set('POST:/penelitian/approval', penelitan.approvalPenelitian);
 
 routes.set('GET:/penelitian/etik', penelitan.getPenelitianEtik);
 routes.set('POST:/penelitian/etik/approval', penelitan.approvalEtikPenelitian);
+routes.set('POST:/penelitian/etik/telaah', penelitan.telaahEtikPenelitian);
 
 routes.set('GET:/penelitian/telaah', penelitan.getPenelitianTelaah);
 routes.set('POST:/penelitian/telaah/approval', penelitan.approvalTelaahPenelitian);

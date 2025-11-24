@@ -21,6 +21,7 @@ type FormPenelitian = {
     alasan: string
     file_etik: string | File
     komite_etik: string[]
+    telaah?:string
 }
 
 export default function PenelitianPublishData() {
@@ -39,6 +40,7 @@ export default function PenelitianPublishData() {
     const [dataEtik, setDataEtik] = createSignal<{ label: string, value: string }[]>([]);
     const [loading, setLoading] = createSignal(false);
     const [open, setOpen] = createSignal(false)
+    const [openHasilTelaah, setOpenHasilTelaah] = createSignal(false)
     const [openDetail, setOpenDetail] = createSignal(false)
     const [loadingSave, setLoadingSave] = createSignal(false)
     const [form, setForm] = createSignal(dataForm)
@@ -126,7 +128,7 @@ export default function PenelitianPublishData() {
         formData.append('status', form().status.toString());
         formData.append('file_etik', form().file_etik);
         formData.append('komite_etik', JSON.stringify(dataEtik()));
-        
+
 
         const maxFileSize = 5 * 1024 * 1024; // 5MB
         formData.forEach((value, key) => {
@@ -146,6 +148,42 @@ export default function PenelitianPublishData() {
         const result = await PenelitianService.approvalEtikPenelitian(formData);
         getData()
         setOpen(false)
+        setLoadingSave(false)
+    }
+
+    const handleTelaahSave = async () => {
+
+        // const check = valid()
+        // if (!check) return
+
+        const formData = new FormData();
+
+        // Add text fields
+        formData.append('telaah', form().telaah ?? "");
+        formData.append('id', form().id);
+        formData.append('nomor', form().nomor);
+        formData.append('alasan', form().alasan);
+        formData.append('file_etik', form().file_etik);
+
+
+        const maxFileSize = 5 * 1024 * 1024; // 5MB
+        formData.forEach((value, key) => {
+            if (value instanceof File && value.size > maxFileSize) {
+                showAlert({
+                    title: "Validasi Error",
+                    message: "File terlalu besar, maximal 5 mb",
+                    icon: "error"
+                });
+                return;
+                // throw new Error(`File ${key} melebihi batas ukuran maksimal (5MB)`);
+            }
+        });
+
+
+        setLoadingSave(true)
+        const result = await PenelitianService.telaahPenelitian(formData);
+        getData()
+        setOpenHasilTelaah(false)
         setLoadingSave(false)
     }
 
@@ -193,8 +231,105 @@ export default function PenelitianPublishData() {
                     // disabled: (row) => row.status != "DRAFT"
                     // hidden: (row) => row.id === "f130fdfb-1e12-49b5-9fa2-a3058185bf35",     // ❌ user id=2 tombol delete disembunyikan
                 },
+                {
+                    label: "Telaah",
+                    icon: "approval",
+                    class: "bg-orange-500 text-white hover:bg-orange-600",
+                    onClick: (row) => {
+                        setForm({ ...form(), id: row.id })
+                        setOpenHasilTelaah(true)
+                    },
+                    hidden: (row) => !(row.status === StatusPenelitian.SudahTelaah || row.status === StatusPenelitian.SiapApprovalAmandemen),     // ❌ user id=2 tombol delete disembunyikan
+                },
+                
+                // {
+                //     label: "Amandemen",
+                //     icon: "approval",
+                //     class: "bg-green-500 text-white hover:bg-green-600",
+                //     onClick: async (row) => {
+                //         setLoading(true)
+                //         await PenelitianService.updateStatusPenelitian(row.id, StatusPenelitian.SiapPublish)
+                //         setLoading(false)
+                //         getData()
+                //     },
+                //     hidden: (row) => row.status !== StatusPenelitian.SiapApprovalAmandemen
+                // },
             ]}
         />
+
+        <Modal
+            open={openHasilTelaah()}
+            loading={loadingSave()}
+            title="Tambah Data"
+            onClose={() => !loadingSave() && setOpenHasilTelaah(false)}
+        >
+
+            <div class="flex flex-col gap-4 mt-4">
+
+                <div>
+                    <FormLabel for="telaah" text="Telaah" />
+                    <Select options={[
+                        { label: "Pilih Telaah", value: "" },
+                        { label: "Disetujui", value: "Disetujui" },
+                        { label: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi", value: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi" },
+                        { label: "Disetujui dengan perubahan instansi", value: "Disetujui dengan perubahan instansi" },
+                        { label: "Ditunda untuk beberapa alasan", value: "Ditunda untuk beberapa alasan" },
+                        { label: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk", value: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk" },
+                    ]}
+                        onInput={(e) => setForm({ ...form(), telaah: e.currentTarget.value })} />
+
+                </div>
+
+                <Show when={form().telaah == "Disetujui"}>
+                    <div>
+                        <FormLabel for="nomor" text="Nomor" />
+                        <Input
+                            id="nomor"
+                            value={form()?.nomor}
+                            onInput={(e) => setForm({ ...form(), nomor: e.currentTarget.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <FormLabel for="file_etik" text="File Etik" />
+                        <Input
+                            id="file_etik"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={(e) => setForm({ ...form(), file_etik: e.currentTarget.files?.[0] as File })}
+                        />
+                    </div>
+                </Show>
+                <Show when={form().telaah != ""}>
+                    <div>
+                        <FormLabel for="alasan" text="Alasan" />
+                        <Textarea
+                            id="alasan"
+                            value={form()?.alasan}
+                            onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                        />
+                    </div>
+                </Show>
+
+                <hr class="my-2 border-gray-200" />
+                <div class="flex justify-end gap-2">
+                    <button
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        onClick={() => setOpen(false)}
+                        disabled={loadingSave()}
+                    >
+                        Batal
+                    </button>
+                    <button
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={handleTelaahSave}
+                        disabled={loadingSave()}
+                    >
+                        Simpan
+                    </button>
+                </div>
+            </div>
+        </Modal>
 
         <Modal
             open={open()}
@@ -250,7 +385,7 @@ export default function PenelitianPublishData() {
                         />
                     </div>
                 </Show>
-                <Show when={form().status == StatusPenelitian.PublishPenelitian && form().jenis == "exempted_review"}>
+                <Show when={ form().jenis == "exempted_review"}>
                     <div>
                         <FormLabel for="nomor" text="Nomor" />
                         <Input

@@ -1,5 +1,3 @@
-import type { User } from "@supabase/supabase-js"
-
 
 export enum StatusPenelitian {
     Draft = 101,
@@ -13,7 +11,12 @@ export enum StatusPenelitian {
     PermintaanPerpanjangan = 402,
     SiapTelaah = 501,
     SudahTelaah = 502,
-    PublishPenelitian = 901,
+    SiapAmandemen = 601,
+    UploadAmandemen = 602,
+    SiapApprovalAmandemen = 603,
+    Amandemen = 604,
+    SiapPublish = 901,
+    PublishPenelitian = 902,
 }
 
 export const getStatusPenelitianNama = (status: number) => {
@@ -28,23 +31,54 @@ export const getStatusPenelitianNama = (status: number) => {
     if (status == 402) return "Permintaan Perpanjangan"
     if (status == 501) return "Siap ditelaah Komite Etik"
     if (status == 502) return "Sudah ditelaah"
-    if (status == 901) return "Publish Penelitian"
+    if (status == 601) return "Siap Amandemen"
+    if (status == 602) return "Upload Amandemen"
+    if (status == 603) return "Siap Approval Amandemen"
+    if (status == 604) return "Amandemen"
+    if (status == 901) return "Siap Publish Penelitian"
+    if (status == 902) return "Publish Penelitian"
+    return ""
+}
+
+export const getStatusCalonPenelitianNama = (status: number) => {
+    if (status == 101) return "Draft"
+    if (status == 102) return "Submit"
+    if (status == 201) return "Penelitian Diterima"
+    if (status == 202) return "Informasi Kurang"
+    if (status == 205) return "Penelitian Upload"
+    if (status == 301) return "Proses Kaji Etik"
+    if (status == 302) return "Revisi"
+    if (status == 401) return "Expired"
+    if (status == 402) return "Permintaan Perpanjangan"
+    if (status == 501) return "Proses Kaji Etik"
+    if (status == 502) return "Proses Kaji Etik"
+    if (status == 601) return "Proses Amandemen"
+    if (status == 602) return "Proses Amandemen"
+    if (status == 603) return "Proses Amandemen"
+    if (status == 604) return "Amandemen"
+    if (status == 901) return "Proses Verifikasi Publish"
+    if (status == 902) return "Publish Penelitian"
     return ""
 }
 
 export const getStatusPenelitianData = (status: number) => {
-    if (status == 101) return { name: "Draft", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 102) return { name: "Submit", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 201) return { name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 202) return { name: "Informasi Kurang", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 205) return { name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 301) return { name: "Proses Kaji Etik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 302) return { name: "Revisi", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 401) return { name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 402) return { name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 501) return { name: "Siap ditelaah Komite Etik", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 502) return { name: "Sudah ditelaah", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 901) return { name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 101) return { name: getStatusPenelitianNama(101), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 102) return { name: getStatusPenelitianNama(102), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 201) return { name: getStatusPenelitianNama(201), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 202) return { name: getStatusPenelitianNama(202), class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 205) return { name: getStatusPenelitianNama(205), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 301) return { name: getStatusPenelitianNama(301), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 302) return { name: getStatusPenelitianNama(302), class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 401) return { name: getStatusPenelitianNama(401), class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 402) return { name: getStatusPenelitianNama(402), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 501) return { name: getStatusPenelitianNama(501), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 502) return { name: getStatusPenelitianNama(502), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 601) return { name: getStatusPenelitianNama(601), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 602) return { name: getStatusPenelitianNama(602), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 603) return { name: getStatusPenelitianNama(603), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 604) return { name: getStatusPenelitianNama(604), class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 901) return { name: getStatusPenelitianNama(901), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 902) return { name: getStatusPenelitianNama(902), class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     return { name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
 }
 
@@ -170,6 +204,9 @@ export interface Penelitian {
     kategori:string
     nomor_regis: string
     is_internal: boolean
+
+    komite_etik_approval:any[]
+    telaah?:string
 }
 
 export interface PenelitianDetail {

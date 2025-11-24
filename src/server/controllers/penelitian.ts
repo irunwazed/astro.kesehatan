@@ -509,6 +509,65 @@ export class PenelitianController {
     }
   }
 
+  
+  async updateStatusPenelitian(request: Request) {
+    try {
+      const { id, status } = await request.json();
+
+      const result = await repository.updateStatus(id, status);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async uploadAmandemen(request: Request) {
+    try {
+      
+      
+      const formData = await request.formData();
+
+
+      const data: {
+        id: string,
+        file_amandemen: string
+      } = {
+        id: formData.get('id') as string,
+        file_amandemen: "",
+      }
+
+      
+      const file_amandemen = formData.get("file_amandemen") as File;
+      const file_amandemen_path = await uploadFilePermohonan("file_amandemen" + "_" + uuidv7() + ".pdf", file_amandemen);
+      data.file_amandemen = file_amandemen_path ?? ""
+
+      const result = await repository.uploadAmandemen(data.id, data.file_amandemen);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil diapproval",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
   async approvalPenelitian(request: Request) {
     try {
       const { status, jenis, id, alasan } = await request.json();
@@ -595,7 +654,7 @@ export class PenelitianController {
         } catch (err) { console.log("err", err) }
         status = StatusPenelitian.SiapTelaah
       } else if (data.jenis == "exempted_review" && data.status == StatusPenelitian.SiapTelaah) {
-        status = StatusPenelitian.PublishPenelitian
+        status = StatusPenelitian.SiapPublish
       }
       console.log("komite", komite)
       console.log("status", status)
@@ -604,6 +663,48 @@ export class PenelitianController {
       return new Response(JSON.stringify({
         status: true,
         message: "Data penelitian berhasil diapproval",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  
+  async telaahEtikPenelitian(request: Request) {
+    try {
+
+      const formData = await request.formData();
+
+
+      const data: {
+        id: string,
+        telaah: string
+        nomor: string
+        alasan: string
+        file_etik: string
+      } = {
+        id: formData.get('id') as string,
+        telaah: formData.get('telaah') as string,
+        nomor: formData.get('nomor') as string,
+        alasan: formData.get('alasan') as string,
+        file_etik: "",
+      }
+
+      const file_etik = formData.get("file_etik") as File;
+      const file_etik_path = await uploadFilePermohonan("file_etik" + "_" + uuidv7() + ".pdf", file_etik);
+      data.file_etik = file_etik_path ?? ""
+
+      const result = await repository.telaahEtik(data.id, data.telaah, data.nomor, data.alasan, data.file_etik);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil ditelaah",
         data: result
       }), { status: 200 });
 

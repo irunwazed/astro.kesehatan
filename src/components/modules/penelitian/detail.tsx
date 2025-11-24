@@ -1,4 +1,4 @@
-import { createSignal, onMount, Show } from "solid-js";
+import { createSignal, For, onMount, Show } from "solid-js";
 import { PenelitianService } from "src/client/service/penelitian";
 import { getStatusPendanaanNama, getStatusPenelitianData, type PenelitianDetail } from "src/helpers/dto/penelitian";
 import { route } from "src/helpers/lib/route";
@@ -103,7 +103,7 @@ export default function PenelitianDetail({ id }: { id: string }) {
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Pendanaan</label>
-                            <p class="mt-1 text-gray-800">{data()?.penelitian.pendanaan == "1"? "Mandiri":"Sponsor"}</p>
+                            <p class="mt-1 text-gray-800">{data()?.penelitian.pendanaan == "1" ? "Mandiri" : "Sponsor"}</p>
                         </div>
                         <Show when={data()?.penelitian.pendanaan == "2"}>
                             <div>
@@ -128,7 +128,7 @@ export default function PenelitianDetail({ id }: { id: string }) {
                         <p class="mt-1 text-gray-800">{data()?.penelitian.mahasiswa_proposal}</p>
                     </div>
 
-                    
+
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-600">Jenis</label>
                         <p class="mt-1 text-gray-800">{getStatusPendanaanNama(data()?.penelitian.jenis ?? "")}</p>
@@ -342,6 +342,23 @@ export default function PenelitianDetail({ id }: { id: string }) {
                             </div>
                         </Show>
                     </div>
+                    <Show when={(data()?.penelitian?.komite_etik_approval ?? []).length > 0}>
+                        
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Telaah Komite Etik</label>
+                        <div>
+                            <For each={data()?.penelitian.komite_etik_approval ?? []}>
+                                {(item) => (
+                                    <div class="border p-3 rounded mb-2">
+                                        <p><span class="font-semibold">Nama:</span> {item.nama}</p>
+                                        <p><span class="font-semibold">Telaah:</span> {item.telaah}</p>
+                                        <p><span class="font-semibold">Note:</span> {item.note}</p>
+                                    </div>
+                                )}
+                            </For>
+                        </div>
+                    </div>
+                    </Show>
 
                 </div>
             </Show>
