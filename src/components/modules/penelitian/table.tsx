@@ -165,7 +165,9 @@ export default function PenelitianData() {
         >
 
             <div class="flex flex-col gap-4 mt-4">
-
+            <div>
+                <a class="bg-blue-300 rounded-lg text-blue-800 py-2 px-4" target="_blank" href="https://docs.google.com/document/d/1uSnqntGrRAWrnvEomjp0WYQebh02XC_J/edit?usp=sharing&ouid=113163073729505832768&rtpof=true&sd=true">Download Template</a>
+            </div>
 
             <div>
                 <FormLabel for="file_amandemen" text="File Amandemen" required={true} />
