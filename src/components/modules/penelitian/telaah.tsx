@@ -13,26 +13,18 @@ import { route } from "src/helpers/lib/route";
 import PenelitianDetail from "./detail";
 import MultiSelectSearch from "@solid-ui/MultiSelectSearch";
 
-type FormPenelitian = {
+type FormTelaah = {
     id: string,
-    status: number
-    nomor: string
-    jenis: string
-    alasan: string
-    file_etik: string | File
-    komite_etik: string[]
+    telaah: string,
+    note: string,
 }
 
-export default function PenelitianPublishData() {
+export default function PenelitianTelaah() {
 
-    const dataForm: FormPenelitian = {
+    const dataForm: FormTelaah = {
         id: "",
-        nomor: "",
-        status: 0,
-        jenis: "",
-        alasan: "",
-        file_etik: "",
-        komite_etik: []
+        telaah: "",
+        note: "",
     }
 
     const [data, setData] = createSignal<Penelitian[]>([]);
@@ -46,7 +38,7 @@ export default function PenelitianPublishData() {
 
     const getData = async () => {
         setLoading(true);
-        const data = await PenelitianService.getPenelitianEtik()
+        const data = await PenelitianService.getPenelitianTelaah()
 
         const result = data.data?.map((dt) => {
             dt.status_nama = getStatusPenelitianNama(dt.status as number)
@@ -58,22 +50,8 @@ export default function PenelitianPublishData() {
         setLoading(false);
     }
 
-
-    const getDataEtik = async () => {
-        // setLoading(true);
-        const data = await PenelitianService.getKomiteEtik()
-
-        const result = data.data?.map((dt) => {
-            return { label: dt.full_name, value: dt.id }
-        }) ?? []
-
-        setDataEtik(result)
-    }
-
-
     onMount(async () => {
         getData()
-        getDataEtik()
     })
 
 
@@ -83,14 +61,6 @@ export default function PenelitianPublishData() {
 
     const valid = () => {
 
-        if (form().status == 0) {
-            showAlert({
-                title: "Peringatan",
-                message: "Pilih Status Approval"
-            })
-            return false
-        }
-
         if (form().id == "") {
             showAlert({
                 title: "Peringatan",
@@ -98,14 +68,6 @@ export default function PenelitianPublishData() {
             })
             return false
         }
-
-        // if (form().nomor == "") {
-        //     showAlert({
-        //         title: "Peringatan",
-        //         message: "Masukkan Nomor"
-        //     })
-        //     return false
-        // }
 
 
         return true
@@ -119,14 +81,9 @@ export default function PenelitianPublishData() {
         const formData = new FormData();
 
         // Add text fields
-        formData.append('alasan', form().alasan);
+        formData.append('note', form().note);
         formData.append('id', form().id);
-        formData.append('nomor', form().nomor);
-        formData.append('jenis', form().jenis);
-        formData.append('status', form().status.toString());
-        formData.append('file_etik', form().file_etik);
-        formData.append('komite_etik', JSON.stringify(dataEtik()));
-        
+        formData.append('telaah', form().telaah);
 
         const maxFileSize = 5 * 1024 * 1024; // 5MB
         formData.forEach((value, key) => {
@@ -143,7 +100,7 @@ export default function PenelitianPublishData() {
 
 
         setLoadingSave(true)
-        const result = await PenelitianService.approvalEtikPenelitian(formData);
+        const result = await PenelitianService.approvalTelaahPenelitian(formData);
         getData()
         setOpen(false)
         setLoadingSave(false)
@@ -160,7 +117,7 @@ export default function PenelitianPublishData() {
                 {
                     key: "status_nama", header: "Status", render: (row) => {
                         return <div>
-                            <div class={getStatusPenelitianData(row.status).class}>{getStatusPenelitianData(row.status).name}</div>
+                            Proses Kaji Etik
                         </div>
                     },
                     width: "200px",
@@ -204,79 +161,27 @@ export default function PenelitianPublishData() {
         >
 
             <div class="flex flex-col gap-4 mt-4">
-
-
                 <div>
-                    <FormLabel for="status" text="Status" />
+                    <FormLabel for="telaah" text="Telaah" />
                     <Select options={[
-                        { label: "Pilih Status", value: "0" },
-                        { label: "Tolak", value: StatusPenelitian.TolakPenelitianEtik.toString() },
-                        { label: "Terima", value: StatusPenelitian.SiapTelaah.toString() }
+                        { label: "Pilih Telaah", value: "" },
+                        { label: "Disetujui", value: "Disetujui" },
+                        { label: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi", value: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi" },
+                        { label: "Disetujui dengan perubahan instansi", value: "Disetujui dengan perubahan instansi" },
+                        { label: "Ditunda untuk beberapa alasan", value: "Ditunda untuk beberapa alasan" },
+                        { label: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk", value: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk" },
                     ]}
-                        onInput={(e) => setForm({ ...form(), status: parseInt(e.currentTarget.value) })} />
+                        onInput={(e) => setForm({ ...form(), telaah: e.currentTarget.value})} />
 
                 </div>
 
-                <Show when={form().status == StatusPenelitian.SiapTelaah}>
-                    <div>
-                        <FormLabel for="jenis" text="Jenis" />
-                        <Select options={[
-                            { label: "Pilih Jenis", value: "" },
-                            { label: "Exempted Review", value: "exempted_review" },
-                            { label: "Expedited Review", value: "expedited_review" },
-                            { label: "Full Board Review", value: "full_board_review" },
-                        ]}
-                            onInput={(e) => setForm({ ...form(), jenis: (e.currentTarget.value) })} />
-                    </div>
-                </Show>
-
-
-                <Show when={form().jenis == "expedited_review"}>
-                    <div>
-                        <FormLabel for="komite_etik" text="Komite Etik" />
-                        <MultiSelectSearch
-                            placeholder="Search for users"
-                            getData={async (query: string) => {
-                                // return dataEtik().filter((de) => de.label.toLowerCase().includes(query.toLowerCase()))
-                                // return dataEtik()
-                                const data = await PenelitianService.getKomiteEtik()
-                                const result = data.data?.map((dt) => {
-                                    return { label: dt.full_name, value: dt.id }
-                                }) ?? []
-                                return result
-                            }}  // Pass fungsi untuk mengambil data
-                            onChange={handleSelectedUsersChange}  // Mengatur callback perubahan data yang dipilih
-                            minLength={0}  // Minimal panjang query sebelum pencarian dilakukan
-                        />
-                    </div>
-                </Show>
-                <Show when={form().status == StatusPenelitian.PublishPenelitian && form().jenis == "exempted_review"}>
-                    <div>
-                        <FormLabel for="nomor" text="Nomor" />
-                        <Input
-                            id="nomor"
-                            value={form()?.nomor}
-                            onInput={(e) => setForm({ ...form(), nomor: e.currentTarget.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <FormLabel for="file_etik" text="File Etik" />
-                        <Input
-                            id="file_etik"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => setForm({ ...form(), file_etik: e.currentTarget.files?.[0] as File })}
-                        />
-                    </div>
-                </Show>
-                <Show when={form().status > 0}>
+                <Show when={form().telaah != ""}>
                     <div>
                         <FormLabel for="alasan" text="Alasan" />
                         <Textarea
                             id="alasan"
-                            value={form()?.alasan}
-                            onInput={(e) => setForm({ ...form(), alasan: e.currentTarget.value })}
+                            value={form()?.note}
+                            onInput={(e) => setForm({ ...form(), note: e.currentTarget.value })}
                         />
                     </div>
                 </Show>

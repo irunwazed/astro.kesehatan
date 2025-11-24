@@ -14,6 +14,8 @@ export type InsertPenelitianAwal = {
   jenis: string
   file_permohonan_instansi?: string
   file_draft_penelitian?: string
+  kategori:string
+  is_internal: boolean
 }
 
 export type FormPermohonanPenelitian = {

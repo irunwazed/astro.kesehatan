@@ -130,7 +130,19 @@ const user = getUserFromToken(token || "");
                       href="/app/penelitian/publish"
                       class="block px-3 py-1.5 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-700"
                     >
-                      Penelitian Etik
+                      Admin Etik
+                    </a>
+                  </li>
+                )
+              }
+              {
+                checkRole(user?.roles ?? [], [USER.ADMIN, USER.KOMITE_ETIK]) && (
+                  <li>
+                    <a
+                      href="/app/penelitian/telaah"
+                      class="block px-3 py-1.5 text-gray-600 rounded hover:bg-blue-50 hover:text-blue-700"
+                    >
+                      Telaah
                     </a>
                   </li>
                 )

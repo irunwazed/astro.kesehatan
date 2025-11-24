@@ -1,11 +1,5 @@
-// import { createClient } from "@supabase/supabase-js";
 
-import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../configs/db"
-
-// const supabase = createClient(import.meta.env.SUPABASE_URL || "", import.meta.env.SUPABASE_KEY || "")
-
-// const supabaseAdmin = createClient(import.meta.env.SUPABASE_URL || "", import.meta.env.SUPABASE_KEY || "")
 
 export class UserRepository {
 
@@ -87,7 +81,27 @@ export class UserRepository {
         else console.table(data)
     }
 
-    
+    async getKomiteEtik() {
+        const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+
+        const result:{id:string, full_name:string}[] = []
+        data?.map((dt:{roles:string[], id:string, full_name:string}) => {
+            if(dt.roles.includes("komite_etik")){
+                result.push({
+                    id: dt.id,
+                    full_name: dt.full_name,
+                })
+            }
+        })
+        
+        if (error){
+            console.log("error", error)
+            return []
+        }
+        return result
+    }
 
     async getProfileId(id:string) {
         const { data, error } = await supabase.from('profiles').select('*').eq("id", id)

@@ -30,6 +30,7 @@ export default function Form1Data() {
         file_daftar_pustaka: "",
         file_bukti_transfer: "",
         biaya_penelitian: 0,
+        file_informed_consent: "",
         izin_etik: "",
     }
 
@@ -91,6 +92,10 @@ export default function Form1Data() {
             { field: 'file_cv_peneliti', label: 'CV Peneliti' },
             { field: 'file_bukti_transfer', label: 'Bukti Transfer' }
         ];
+
+        if(data().kategori == "primer"){
+            requiredFiles.push({ field: 'file_informed_consent', label: 'Informed Consent' })
+        }
 
         requiredFiles.forEach(({ field, label }) => {
             if (!form[field]) errors.push(`${label} wajib diupload`);
@@ -218,15 +223,15 @@ export default function Form1Data() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
-                        <FormLabel for="nama" text="Judul Penelitian" />
+                        <FormLabel for="nama" text="Judul Penelitian" required={true} />
                         <Input
                             id="nama"
                             value={data()?.nama}
-                            disabled={true}
+                            onInput={(e) => setForm({ ...form(), nama: e.currentTarget.value })}
                         />
                     </div>
                     <div>
-                        <FormLabel for="check_mahasiswa" text="Apakah anda Mahasiswa dan sudah mengikuti Ujian Proposal?" />
+                        <FormLabel for="check_mahasiswa" text="Apakah anda Mahasiswa dan sudah mengikuti Ujian Proposal?" required={true} />
                         <div class="flex gap-2 ">
                             <Select id="check_mahasiswa" options={[
                                 { label: "Pilih Status", value: "" },
@@ -253,7 +258,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="biaya_penelitian" text="Biaya Penelitian" />
+                        <FormLabel for="biaya_penelitian" text="Biaya Penelitian" required={true} />
                         <Input
                             id="biaya_penelitian"
                             type="number"
@@ -264,7 +269,7 @@ export default function Form1Data() {
 
                     {/* File Uploads */}
                     <div>
-                        <FormLabel for="file_surat_izin_penelitian" text="Surat Izin Penelitian" />
+                        <FormLabel for="file_surat_izin_penelitian" text="Surat Izin Penelitian" required={true} />
                         <div class="flex gap-2">
 
                             <Input
@@ -280,7 +285,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_formulir_telaah_penelitian" text="Formulir Telaah Penelitian" />
+                        <FormLabel for="file_formulir_telaah_penelitian" text="Formulir Telaah Penelitian" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_formulir_telaah_penelitian"
@@ -295,7 +300,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_formulir_ketersediaan_penelitian" text="Formulir Ketersediaan Penelitian" />
+                        <FormLabel for="file_formulir_ketersediaan_penelitian" text="Formulir Ketersediaan Penelitian" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_formulir_ketersediaan_penelitian"
@@ -310,7 +315,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek" />
+                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_informasi_calon_subjek"
@@ -325,7 +330,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_pernyataan_konflik" text="Pernyataan Konflik Kepentingan" />
+                        <FormLabel for="file_pernyataan_konflik" text="Pernyataan Konflik Kepentingan" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_pernyataan_konflik"
@@ -340,7 +345,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_proposal_penelitian" text="Proposal Penelitian" />
+                        <FormLabel for="file_proposal_penelitian" text="Proposal Penelitian" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_proposal_penelitian"
@@ -355,7 +360,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_surat_kaji_etik" text="Surat Kaji Etik" />
+                        <FormLabel for="file_surat_kaji_etik" text="Surat Kaji Etik" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_surat_kaji_etik"
@@ -370,7 +375,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_cv_peneliti" text="CV Peneliti" />
+                        <FormLabel for="file_cv_peneliti" text="CV Peneliti" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_cv_peneliti"
@@ -385,7 +390,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_cv_tim_peneliti" text="CV Tim Peneliti" />
+                        <FormLabel for="file_cv_tim_peneliti" text="CV Tim Peneliti" required={data()?.kategori == "sekunder"} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_cv_tim_peneliti"
@@ -398,9 +403,23 @@ export default function Form1Data() {
                             </Show>
                         </div>
                     </div>
+                    <div>
+                        <FormLabel for="file_informed_consent" text="Informed Consent" required={data()?.kategori == "primer"} />
+                        <div class="flex gap-2">
+                            <Input
+                                id="file_informed_consent"
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => setForm({ ...form(), file_informed_consent: e.currentTarget.files?.[0] as File })}
+                            />
+                            <Show when={typeof (data()?.file_informed_consent) === "string" && data()?.file_cv_tim_peneliti != ""}>
+                                <Button class="" onclick={() => route.download(data()?.file_cv_tim_peneliti)}>Download</Button>
+                            </Show>
+                        </div>
+                    </div>
 
                     <div>
-                        <FormLabel for="file_persetujuan" text="File Persetujuan" />
+                        <FormLabel for="file_persetujuan" text="File Persetujuan" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_persetujuan"
@@ -415,7 +434,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_kuesioner" text="File Kuesioner" />
+                        <FormLabel for="file_kuesioner" text="File Kuesioner" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_kuesioner"
@@ -430,7 +449,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_daftar_pustaka" text="Daftar Pustaka" />
+                        <FormLabel for="file_daftar_pustaka" text="Daftar Pustaka" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_daftar_pustaka"
@@ -445,7 +464,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_bukti_transfer" text="Bukti Transfer" />
+                        <FormLabel for="file_bukti_transfer" text="Bukti Transfer" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_bukti_transfer"

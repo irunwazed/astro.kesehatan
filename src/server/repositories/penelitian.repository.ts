@@ -4,8 +4,49 @@ import { supabase } from "../configs/db";
 import type { FormPermohonanPenelitian, InsertPenelitianAwal, InsertPenelitianPerpanjang } from "../types/penelitian";
 import { getTimeNow } from "src/helpers/lib/time";
 import { USER } from "src/helpers/lib/constant";
+import { generateNomor } from "../helpers/crypto";
+import type { KomiteEtikTelaah } from "../models/penelitian";
 
 
+function extractNomorUrut(nomorRegis: string): number {
+  try {
+    if (!nomorRegis) return 0;
+
+    const parts = nomorRegis.split("/");
+    if (parts.length < 2) return 0;
+
+    const num = parseInt(parts[1], 10);
+
+    return isNaN(num) ? 0 : num;
+  } catch (err) {
+    return 0;
+  }
+}
+
+
+const getLastNoNow = async (): Promise<number> => {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+
+  const { data: penelitian, error } = await supabase
+    .from("penelitian")
+    .select("nomor_regis")
+    .like("nomor_regis", `%/${month}/${year}`)
+    .order("nomor_regis", { ascending: false }) // ambil nomor terakhir
+    .limit(1);
+
+  if (error) {
+    console.error("Supabase error:", error);
+    return 0;
+  }
+
+  if (!penelitian || penelitian.length === 0) {
+    return 0;
+  }
+
+  return extractNomorUrut(penelitian[0].nomor_regis);
+};
 
 
 export class PenelitianRepository {
@@ -44,7 +85,7 @@ export class PenelitianRepository {
       .from('penelitian')
       .select('*')
       .in('status', [StatusPenelitian.Submit, StatusPenelitian.PenelitianUpload, StatusPenelitian.PermintaanPerpanjangan])
-      // .eq("status", StatusPenelitian.Submit)
+    // .eq("status", StatusPenelitian.Submit)
 
     if (!penelitian) {
       console.log("error ", error)
@@ -67,8 +108,38 @@ export class PenelitianRepository {
     return penelitian
   }
 
+
+  async getReadyTelaah(user_id: string): Promise<Penelitian[]> {
+    let { data: penelitian, error } = await supabase
+      .from('penelitian')
+      .select('*')
+      .in('status', [StatusPenelitian.SiapTelaah])
+
+    console.log("penelitian", penelitian?.length)
+    const telaah: Penelitian[] = []
+    penelitian?.map((p) => {
+      p?.komite_etik_approval?.map((ep: KomiteEtikTelaah) => {
+        if (ep.id == user_id) {
+          telaah.push(p)
+        }
+      })
+    })
+
+    console.log("telaah", telaah?.length)
+
+    if (error) {
+      console.log("error ", error)
+      return []
+    }
+    return telaah
+  }
+
+
+
   async create(data: InsertPenelitianAwal) { // FormPermohonanPenelitian
 
+    const no = generateNomor(await getLastNoNow() + 1)
+    console.log("no", no)
     return await supabase.from('penelitian').insert([
       {
         ...data,
@@ -85,6 +156,7 @@ export class PenelitianRepository {
         // file_permohonan_instansi: data.file_permohonan_instansi,
         // file_draft_penelitian: data.file_draft_penelitian,
         status: StatusPenelitian.Submit,
+        nomor_regis: no,
         updated_at: getTimeNow(),
       }
     ])
@@ -149,12 +221,40 @@ export class PenelitianRepository {
     }).eq("id", id)
   }
 
-  async approvalEtik(id: string, nomor: string, status: boolean, alasan: string, file_etik: string) { // FormPermohonanPenelitian
+  async approvalEtik(id: string, nomor: string, status: StatusPenelitian, alasan: string, file_etik: string, jenis: string, komite_etik: any) { // FormPermohonanPenelitian
     return await supabase.from('penelitian').update({
       nomor: nomor,
       alasan: alasan,
-      status: status ? StatusPenelitian.PublishPenelitian : StatusPenelitian.TolakPenelitianEtik,
+      status: status,
       file_etik: file_etik,
+      komite_etik_approval: komite_etik,
+      updated_at: getTimeNow(),
+    }).eq("id", id)
+  }
+
+  async approvalTelaah(user_id: string, id: string, telaah: string, note: string) {
+
+
+    let { data: penelitian, error } = await supabase
+      .from('penelitian')
+      .select('*')
+      .eq("id", id)
+
+    console.log("penelitian", penelitian?.length)
+    const telaahData: KomiteEtikTelaah[] = []
+    penelitian?.map((p) => {
+      p?.komite_etik_approval?.map((ep: KomiteEtikTelaah) => {
+        if (ep.id == user_id && p.id == id) {
+          ep.telaah = telaah
+          ep.note = note
+          telaahData.push(ep)
+        }
+      })
+    })
+
+    return await supabase.from('penelitian').update({
+      komite_etik_approval: telaahData,
+      status: StatusPenelitian.SudahTelaah,
       updated_at: getTimeNow(),
     }).eq("id", id)
   }
@@ -216,10 +316,8 @@ export class PenelitianRepository {
     // Membangun query dasar
     let query = supabase.from('penelitian').select('*').order("updated_at", { ascending: false });
 
-    console.log("sevenDaysAgoISOString", sevenDaysAgoISOString); // Debug log untuk memeriksa tanggal
-
     // Menambahkan filter untuk 'updated_at' yang lebih kecil dari 7 hari yang lalu
-    query = query.lt('updated_at', sevenDaysAgoISOString); // Mengambil data yang lebih lama dari 7 hari
+    // query = query.lt('updated_at', sevenDaysAgoISOString); // Mengambil data yang lebih lama dari 7 hari
 
     // Menambahkan kondisi berdasarkan role
     if (role == USER.ADMIN_ETIK) {

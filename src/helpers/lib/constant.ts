@@ -9,4 +9,5 @@ export const USER = {
     USER: 'user',       
     ADMIN_ETIK: 'admin_etik',
     ADMIN_VALIDASI: 'admin_validasi',
+    KOMITE_ETIK: 'komite_etik',
 }

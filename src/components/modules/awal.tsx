@@ -25,6 +25,8 @@ export default function FormPenelitianAwal() {
         file_permohonan_instansi: "",
         jumlah_minimal_sampel: 0,
         jenis: "",
+        is_internal: false,
+        kategori: ""
     }
     const [id, setId] = createSignal("");
     const [data, setData] = createSignal<Penelitian | any>(null);
@@ -98,6 +100,7 @@ export default function FormPenelitianAwal() {
         if (!form.pendanaan) errors.push("Pendanaan Peneliti wajib diisi");
         if (!form.file_permohonan_instansi) errors.push("Pendanaan Peneliti wajib diisi");
         if (!form.jenis) errors.push("Jenis wajib diisi");
+        if (!form.kategori) errors.push("Jenis wajib diisi");
 
         if (!form['file_draft_penelitian']) errors.push(`Draft Penelitian wajib diupload`);
         if (!form['file_permohonan_instansi']) errors.push(`Surat Permohonan Instansi wajib diupload`);
@@ -146,6 +149,8 @@ export default function FormPenelitianAwal() {
             formData.append('deskripsi', form().file_draft_penelitian);
             formData.append('deskripsi', form().deskripsi);
             formData.append('jenis', form().jenis);
+            formData.append('kategori', form().kategori);
+            formData.append('is_internal', form().is_internal);
 
 
             formData.append("file_draft_penelitian", form().file_draft_penelitian);
@@ -209,7 +214,7 @@ export default function FormPenelitianAwal() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Basic Information */}
                     <div>
-                        <FormLabel for="nama" text="Judul Penelitian" />
+                        <FormLabel for="nama" text="Judul Penelitian" required={true} />
                         <Input
                             id="nama"
                             value={form().nama}
@@ -218,7 +223,7 @@ export default function FormPenelitianAwal() {
                     </div>
 
                     <div>
-                        <FormLabel for="tujuan" text="Tujuan/Outcome yang diharapkan dari data penelitian" />
+                        <FormLabel for="tujuan" text="Tujuan/Outcome yang diharapkan dari data penelitian" required={true} />
                         <Input
                             id="tujuan"
                             value={form().tujuan}
@@ -227,7 +232,7 @@ export default function FormPenelitianAwal() {
                     </div>
 
                     <div>
-                        <FormLabel for="deskripsi" text="Deskripsi Kebutuhan Data (Misalnya diagnosa pasien)" />
+                        <FormLabel for="deskripsi" text="Deskripsi Kebutuhan Data (Misalnya diagnosa pasien)" required={true} />
                         <Input
                             id="deskripsi"
                             value={form().deskripsi}
@@ -236,7 +241,7 @@ export default function FormPenelitianAwal() {
                     </div>
 
                     <div>
-                        <FormLabel for="variabel_lain" text="Variabel Lain dari Data (Misalnya usia, rawat jalan atau rawat inap, dll)" />
+                        <FormLabel for="variabel_lain" text="Variabel Lain dari Data (Misalnya usia, rawat jalan atau rawat inap, dll)" required={true} />
                         <Input
                             id="variabel_lain"
                             value={form().variabel_lain}
@@ -245,7 +250,7 @@ export default function FormPenelitianAwal() {
                     </div>
 
                     <div>
-                        <FormLabel for="jumlah_minimal_sampel" text="Jumlah Minimal Sampel yang Dibutuhkan" />
+                        <FormLabel for="jumlah_minimal_sampel" text="Jumlah Minimal Sampel yang Dibutuhkan" required={true} />
                         <Input
                             id="jumlah_minimal_sampel"
                             type="number"
@@ -256,7 +261,7 @@ export default function FormPenelitianAwal() {
 
                     <div class="flex gap-2">
                         <div>
-                            <FormLabel for="waktu_awal_sample" text="Jangka Waktu Awal Pengambilan Sampel data (Tahun)" />
+                            <FormLabel for="waktu_awal_sample" text="Jangka Waktu Awal Pengambilan Sampel data (Tahun)" required={true} />
                             <Input
                                 id="waktu_awal_sample"
                                 type="number"
@@ -265,7 +270,7 @@ export default function FormPenelitianAwal() {
                             />
                         </div>
                         <div>
-                            <FormLabel for="waktu_akhir_sample" text="Jangka Waktu Akhir Pengambilan Sampel data (Tahun)" />
+                            <FormLabel for="waktu_akhir_sample" text="Jangka Waktu Akhir Pengambilan Sampel data (Tahun)" required={true} />
                             <Input
                                 id="waktu_akhir_sample"
                                 type="number"
@@ -278,7 +283,7 @@ export default function FormPenelitianAwal() {
 
                     <div class="flex gap-2">
                         <div class="flex-1">
-                            <FormLabel for="pendanaan" text="Asal pendanaan penelitian? " />
+                            <FormLabel for="pendanaan" text="Asal pendanaan penelitian? " required={true} />
                             <Select id="pendanaan" options={[
                                 { label: "Pilih Pendanaan", value: "0" },
                                 { label: "Mandiri", value: "1" },
@@ -293,7 +298,7 @@ export default function FormPenelitianAwal() {
                     <div class="flex gap-2">
                         <Show when={form().pendanaan == 2}>
                             <div>
-                                <FormLabel for="sponsor" text="Jika sponsor, sebutkan nama sponsornya" />
+                                <FormLabel for="sponsor" text="Jika sponsor, sebutkan nama sponsornya" required={true} />
                                 <Input
                                     id="sponsor"
                                     value={form().sponsor}
@@ -302,7 +307,7 @@ export default function FormPenelitianAwal() {
                             </div>
                         </Show>
                         <div class="flex-1">
-                            <FormLabel for="jenis" text="Jenis" />
+                            <FormLabel for="jenis" text="Jenis Sponsor" required={true} />
                             <Select options={[
                                 { label: "Pilih Jenis", value: "" },
                                 { label: "[SPONSOR] Penelitian Observasional (Prospektif)", value: "SPONSOR_OBSERVASIONAL" },
@@ -317,12 +322,34 @@ export default function FormPenelitianAwal() {
                         </div>
                     </div>
 
-
+                    
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <FormLabel for="Jenis" text="Jenis Data" required={true} />
+                            <Select id="jenis" options={[
+                                { label: "Pilih Jenis", value: "" },
+                                { label: "Primer", value: "primer" },
+                                { label: "Sekunder", value: "sekunder" }
+                            ]}
+                                onInput={(e) => setForm({ ...form(), kategori: (e.currentTarget.value) })} />
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <FormLabel for="posisi" text="Status Mahasiswa" required={true} />
+                            <Select id="posisi" options={[
+                                { label: "Pilih posisi", value: "" },
+                                { label: "Internal RSAB", value: "y" },
+                                { label: "Eksternal RSAB", value: "n" }
+                            ]}
+                                onInput={(e) => setForm({ ...form(), is_internal: (e.currentTarget.value == "y") })} />
+                        </div>
+                    </div>
 
 
                     {/* File Uploads */}
                     <div>
-                        <FormLabel for="file_draft_penelitian" text="Draft Proposal Penelitian" />
+                        <FormLabel for="file_draft_penelitian" text="Draft Proposal Penelitian" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_draft_penelitian"
@@ -337,7 +364,7 @@ export default function FormPenelitianAwal() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_permohonan_instansi" text="Surat Permohonan dari Instansi" />
+                        <FormLabel for="file_permohonan_instansi" text="Surat Permohonan dari Instansi" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_permohonan_instansi"

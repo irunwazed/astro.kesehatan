@@ -5,10 +5,13 @@ import type { FormPermohonanPenelitian, InsertPenelitianAwal, InsertPenelitianPe
 import { supabase } from "../configs/db";
 import { UserRepository } from "../repositories/user.repository";
 import { StatusPenelitian, type PenelitianDetail } from "src/helpers/dto/penelitian";
+import type { KomiteEtikTelaah } from "../models/penelitian";
 
 
 const repository = new PenelitianRepository();
 const userRepository = new UserRepository();
+
+
 
 
 const processFormDataPenelitian = async (formData: FormData) => {
@@ -17,6 +20,7 @@ const processFormDataPenelitian = async (formData: FormData) => {
 
   const data: FormPermohonanPenelitian = {
     id: formData.get('id') as string,
+    nama: formData.get('nama') as string,
     mahasiswa_proposal: formData.get('check_mahasiswa') as string,
     biaya_penelitian: parseInt(formData.get('biaya_penelitian') as string),
     izin_etik: (formData.get('izin_etik') as string),
@@ -105,6 +109,7 @@ const processFormDataPenelitianAwal = async (user_id: string, formData: FormData
 }> => {
 
   const id: string = formData.get('id') == null ? "" : formData.get('id') as string
+  console.log("sad", formData.get('kategori') as string)
 
   const data: InsertPenelitianAwal = {
     nama: formData.get('nama') as string,
@@ -118,6 +123,8 @@ const processFormDataPenelitianAwal = async (user_id: string, formData: FormData
     user_id: user_id,
     waktu_awal_sample: parseInt(formData.get('waktu_awal_sample') as string),
     waktu_akhir_sample: parseInt(formData.get('waktu_akhir_sample') as string),
+    kategori: formData.get('kategori') as string,
+    is_internal: formData.get('is_internal') as string == "true"
   };
 
   if (formData.get("file_draft_penelitian")) {
@@ -202,6 +209,15 @@ export class PenelitianController {
         message: error instanceof Error ? error.message : "Terjadi kesalahan",
       }), { status: 500 });
     }
+  }
+
+  async getKomiteEtik(req: Request) {
+    const data = await userRepository.getKomiteEtik()
+    return new Response(JSON.stringify({
+      status: true,
+      message: "Data berhasil didapat",
+      data: data
+    }), { status: 200 });
   }
 
   async getPenelitianById(req: Request) {
@@ -324,6 +340,34 @@ export class PenelitianController {
       }
 
       const result = await repository.getReadyEtik()
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data berhasil didapat",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async getPenelitianTelaah(req: Request) {
+    try {
+
+      const auth = await userRepository.getAuth(req)
+      if (!auth) {
+        return new Response(
+          JSON.stringify({ message: 'Token tidak valid' }),
+          { status: 401 }
+        );
+      }
+
+      const result = await repository.getReadyTelaah(auth.id)
 
       return new Response(JSON.stringify({
         status: true,
@@ -499,19 +543,107 @@ export class PenelitianController {
         nomor: string
         alasan: string
         file_etik: string
+        komite_etik: string
+        jenis: string
       } = {
         id: formData.get('id') as string,
         nomor: formData.get('nomor') as string,
         status: parseInt(formData.get('status') as string),
         alasan: formData.get('alasan') as string,
         file_etik: "",
+        komite_etik: formData.get('komite_etik') as string,
+        jenis: formData.get('jenis') as string,
       }
 
       const file_etik = formData.get("file_etik") as File;
       const file_etik_path = await uploadFilePermohonan("file_etik" + "_" + uuidv7() + ".pdf", file_etik);
       data.file_etik = file_etik_path ?? ""
-      // console.log("data", data)
-      const result = await repository.approvalEtik(data.id, data.nomor, (data.status == StatusPenelitian.TerimaPenelitianEtik || data.status == StatusPenelitian.PublishPenelitian), data.alasan, data.file_etik);
+
+      let komite: KomiteEtikTelaah[] = []
+
+      // { label: "Exempted Review", value: "exempted_review" },
+      // { label: "Expedited Review", value: "expedited_review" },
+      // { label: "Full Board Review", value: "full_board_review" },
+
+      console.log("data", data)
+
+      let status = StatusPenelitian.TolakPenelitianEtik
+      if (data.jenis == "expedited_review") {
+        try {
+          const etik = JSON.parse(data.komite_etik)
+          etik.map((e: { label: string, value: string }) => {
+            komite.push({
+              id: e?.value,
+              nama: e?.label,
+              telaah: "",
+              note: ""
+            })
+          })
+        } catch (err) { console.log("err", err) }
+        status = StatusPenelitian.SiapTelaah
+      } else if (data.jenis == "full_board_review") {
+        try {
+          const data_etik = await userRepository.getKomiteEtik()
+          data_etik.map((e) => {
+            komite.push({
+              id: e?.id,
+              nama: e?.full_name,
+              telaah: "",
+              note: ""
+            })
+          })
+        } catch (err) { console.log("err", err) }
+        status = StatusPenelitian.SiapTelaah
+      } else if (data.jenis == "exempted_review" && data.status == StatusPenelitian.SiapTelaah) {
+        status = StatusPenelitian.PublishPenelitian
+      }
+      console.log("komite", komite)
+      console.log("status", status)
+      const result = await repository.approvalEtik(data.id, data.nomor, status, data.alasan, data.file_etik, data.jenis, komite);
+
+      return new Response(JSON.stringify({
+        status: true,
+        message: "Data penelitian berhasil diapproval",
+        data: result
+      }), { status: 200 });
+
+    } catch (error) {
+      console.log("error", error)
+      return new Response(JSON.stringify({
+        status: false,
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+      }), { status: 500 });
+    }
+  }
+
+  async approvalTelaahPenelitian(request: Request) {
+    try {
+      // const { status, id, nomor, alasan } = await request.json();
+
+
+      const auth = await userRepository.getAuth(request)
+      if (!auth) {
+        return new Response(
+          JSON.stringify({ error: 'Token tidak valid' }),
+          { status: 401 }
+        );
+      }
+
+      const formData = await request.formData();
+
+
+      const data: {
+        id: string,
+        telaah: string
+        note: string
+      } = {
+        id: formData.get('id') as string,
+        telaah: formData.get('telaah') as string,
+        note: formData.get('note') as string,
+      }
+
+      console.log("data", data)
+      const result = await repository.approvalTelaah(auth.id, data.id, data.telaah, data.note);
 
       return new Response(JSON.stringify({
         status: true,

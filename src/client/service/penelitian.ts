@@ -25,12 +25,16 @@ export const PenelitianService = {
 
   getPenelitianUser: () => GET<Penelitian[]>({ url: "/api/penelitian" }),
   getNotifikasi: () => GET<Penelitian[]>({ url: "/api/penelitian/notif" }),
+  getKomiteEtik: () => GET<{id:string, full_name:string}[]>({ url: "/api/get/komite-etik" }),
   getPenelitianById: (id:string) => GET<PenelitianDetail|null>({ url: "/api/penelitian/data?id="+id }),
   getPenelitianApproval: () => GET<Penelitian[]>({ url: "/api/penelitian/list" }),
   approvalPenelitian: (id:string, jenis:string, status:StatusPenelitian, alasan:string) => POST<{message:string}>({url: "/api/penelitian/approval", body: { id, jenis, status, alasan }}),
 
   getPenelitianEtik: () => GET<Penelitian[]>({ url: "/api/penelitian/etik" }),
   approvalEtikPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/etik/approval", formData),
+
+  getPenelitianTelaah: () => GET<Penelitian[]>({ url: "/api/penelitian/telaah" }),
+  approvalTelaahPenelitian: (formData: FormData) => HTTPUpload("/api/penelitian/telaah/approval", formData),
 
 
   // async createPenelitian(formData: FormData): Promise<ApiResponse<any>> {

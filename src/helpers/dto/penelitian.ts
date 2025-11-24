@@ -11,7 +11,9 @@ export enum StatusPenelitian {
     TolakPenelitianEtik = 302,
     Expired = 401,
     PermintaanPerpanjangan = 402,
-    PublishPenelitian = 501,
+    SiapTelaah = 501,
+    SudahTelaah = 502,
+    PublishPenelitian = 901,
 }
 
 export const getStatusPenelitianNama = (status: number) => {
@@ -20,11 +22,13 @@ export const getStatusPenelitianNama = (status: number) => {
     if (status == 201) return "Penelitian Diterima"
     if (status == 202) return "Informasi Kurang"
     if (status == 205) return "Penelitian Upload"
-    if (status == 301) return "TerimaPenelitianEtik"
+    if (status == 301) return "Proses Kaji Etik"
     if (status == 302) return "Revisi"
     if (status == 401) return "Expired"
     if (status == 402) return "Permintaan Perpanjangan"
-    if (status == 501) return "Publish Penelitian"
+    if (status == 501) return "Siap ditelaah Komite Etik"
+    if (status == 502) return "Sudah ditelaah"
+    if (status == 901) return "Publish Penelitian"
     return ""
 }
 
@@ -34,11 +38,13 @@ export const getStatusPenelitianData = (status: number) => {
     if (status == 201) return { name: "Penelitian Diterima", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 202) return { name: "Informasi Kurang", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 205) return { name: "Penelitian Upload", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 301) return { name: "TerimaPenelitianEtik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 301) return { name: "Proses Kaji Etik", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 302) return { name: "Revisi", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 401) return { name: "Expired", class: "bg-red-200 text-red-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     if (status == 402) return { name: "Permintaan Perpanjangan", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
-    if (status == 501) return { name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 501) return { name: "Siap ditelaah Komite Etik", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 502) return { name: "Sudah ditelaah", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
+    if (status == 901) return { name: "Publish Penelitian", class: "bg-green-200 text-green-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
     return { name: "", class: "bg-slate-200 text-slate-800 hover:opacity-90 rounded-xl shadow-xl align-middle flex justify-center py-1" }
 }
 
@@ -69,7 +75,7 @@ export interface FormPermohonanAwalPenelitian {
     id: string;
     nama: string;
     tujuan: string;
-    deskripsi: string
+    deskripsi: string;
     variabel_lain: string
     jumlah_minimal_sampel: number
     waktu_awal_sample: number
@@ -79,6 +85,8 @@ export interface FormPermohonanAwalPenelitian {
     file_permohonan_instansi: string | File;
     file_draft_penelitian: string | File;
     jenis: string;
+    is_internal: boolean;
+    kategori: string;
 }
 
 
@@ -101,6 +109,7 @@ export interface FormPermohonanPenelitian {
     file_daftar_pustaka: string | File;
     biaya_penelitian: number;
     file_bukti_transfer: string | File;
+    file_informed_consent: string | File
     izin_etik: string;
 }
 
@@ -157,6 +166,10 @@ export interface Penelitian {
     file_etik: string | null
 
     izin_etik: string,
+
+    kategori:string
+    nomor_regis: string
+    is_internal: boolean
 }
 
 export interface PenelitianDetail {

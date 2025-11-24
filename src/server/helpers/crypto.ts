@@ -25,3 +25,11 @@ export function base64Encode(text: string): string {
 export function base64Decode(encoded: string): string {
   return Buffer.from(encoded, "base64").toString("utf-8");
 }
+
+export function generateNomor(counter: number): string {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const year = now.getFullYear();
+
+    return `TIMKER/${String(counter).padStart(2, '0')}/${month}/${year}`;
+}

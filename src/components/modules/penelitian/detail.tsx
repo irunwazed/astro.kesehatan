@@ -51,8 +51,8 @@ export default function PenelitianDetail({ id }: { id: string }) {
                     <hr class="my-6" />
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-600">ID Penelitian</label>
-                            <p class="mt-1 text-gray-800">{data()?.penelitian.id}</p>
+                            <label class="block text-sm font-medium text-gray-600">Nomor Penelitian</label>
+                            <p class="mt-1 text-gray-800">{data()?.penelitian.nomor_regis}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Tanggal Dibuat</label>
