@@ -93,9 +93,9 @@ export default function Form1Data() {
             { field: 'file_bukti_transfer', label: 'Bukti Transfer' }
         ];
 
-        if(data().kategori == "primer"){
-            requiredFiles.push({ field: 'file_informed_consent', label: 'Informed Consent' })
-        }
+        // if(data().kategori == "primer"){
+        //     requiredFiles.push({ field: 'file_informed_consent', label: 'Informed Consent' })
+        // }
 
         requiredFiles.forEach(({ field, label }) => {
             if (!form[field]) errors.push(`${label} wajib diupload`);
@@ -315,7 +315,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek Informed Consent" required={true} />
+                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek (Informed Consent)" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_informasi_calon_subjek"

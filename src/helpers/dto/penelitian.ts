@@ -167,6 +167,7 @@ export interface Penelitian {
     status: number;                  // contoh: 'draft' | 'submitted' | 'approved'
     status_nama?: string;             // contoh: 'draft' | 'submitted' | 'approved'
     alasan?: string;
+    nomor: string;    
     jenis: string;                   // contoh: 'skripsi' | 'tesis' | 'mandiri'
     user_id: string;
 

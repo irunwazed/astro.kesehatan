@@ -271,8 +271,8 @@ export default function PenelitianPublishData() {
                     <Select options={[
                         { label: "Pilih Telaah", value: "" },
                         { label: "Disetujui", value: "Disetujui" },
-                        { label: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi", value: "Disetujui dengan sedikit perubahan tanpa perubahan subtansi" },
-                        { label: "Disetujui dengan perubahan instansi", value: "Disetujui dengan perubahan instansi" },
+                        { label: "Disetujui dengan sedikit perubahan tanpa perubahan substansi", value: "Disetujui dengan sedikit perubahan tanpa perubahan substansi" },
+                        { label: "Disetujui dengan perubahan substansi", value: "Disetujui dengan perubahan substansi" },
                         { label: "Ditunda untuk beberapa alasan", value: "Ditunda untuk beberapa alasan" },
                         { label: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk", value: "Tidak dapat disetujui dengan alasan (lihat lembaran pertimbangan atau saran atau petunjuk" },
                     ]}
