@@ -315,7 +315,7 @@ export default function Form1Data() {
                     </div>
 
                     <div>
-                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek" required={true} />
+                        <FormLabel for="file_informasi_calon_subjek" text="Informasi Calon Subjek Informed Consent" required={true} />
                         <div class="flex gap-2">
                             <Input
                                 id="file_informasi_calon_subjek"
@@ -403,7 +403,7 @@ export default function Form1Data() {
                             </Show>
                         </div>
                     </div>
-                    <div>
+                    {/* <div>
                         <FormLabel for="file_informed_consent" text="Informed Consent" required={data()?.kategori == "primer"} />
                         <div class="flex gap-2">
                             <Input
@@ -416,7 +416,7 @@ export default function Form1Data() {
                                 <Button class="" onclick={() => route.download(data()?.file_cv_tim_peneliti)}>Download</Button>
                             </Show>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div>
                         <FormLabel for="file_persetujuan" text="File Persetujuan" required={true} />

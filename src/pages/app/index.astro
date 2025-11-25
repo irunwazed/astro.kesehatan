@@ -10,7 +10,7 @@ const user = getUserFromToken(token || "");
 
 <MainLayout title="Dashboard">
   {
-    checkRole(user?.roles ?? [], [USER.ADMIN, USER.USER]) && (
+    checkRole(user?.roles ?? [], [USER.ADMIN, USER.ADMIN_ETIK, USER.ADMIN_VALIDASI]) && (
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-6 rounded-lg shadow-sm">
           <h3 class="text-lg font-medium text-gray-800 mb-2">
